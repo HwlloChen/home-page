@@ -7,6 +7,8 @@ ChenServer的新主页，目前处于项目初期。
 
 代码比较屎（有些地方vue和jquery混用）
 
+[Demo Page(https://chenserver.top/new)](https://chenserver.top/new)
+
 以GPLv3协议开源。
 
 #### 初始化
