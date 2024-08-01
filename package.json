@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@simonwep/pickr": "^1.9.1",
     "aos": "^2.3.4",
+    "compressorjs": "^1.2.1",
     "mdui": "^2.1.2",
     "vue": "^3.4.29"
   },
