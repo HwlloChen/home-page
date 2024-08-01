@@ -1,29 +1,28 @@
 # HomePage
 
-This template should help get you started developing with Vue 3 in Vite.
+Hi there!
 
-## Recommended IDE Setup
+#### 介绍
+ChenServer的新主页，目前处于项目初期。
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+代码比较屎（有些地方vue和jquery混用）
 
-## Customize configuration
+以GPLv3协议开源。
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+#### 初始化
 
-## Project Setup
+```bash
+# 克隆仓库
+git clone https://gitee.com/HwlloChen/home-page.git
 
-```sh
+# 下载依赖包
 npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
+# 启动开发环境
 npm run dev
-```
 
-### Compile and Minify for Production
-
-```sh
+# 打包生产环境
 npm run build
+
 ```
+
