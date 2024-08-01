@@ -6,7 +6,7 @@
         <mdui-top-app-bar slot="header">
             <mdui-button-icon icon="close"
                 onclick="document.getElementById('colorDialog').open = false;"></mdui-button-icon>
-            <mdui-top-app-bar-title>设置颜色</mdui-top-app-bar-title>
+            <mdui-top-app-bar-title>设置主题</mdui-top-app-bar-title>
             <mdui-button variant="tonal" @click="saveTheme">保存</mdui-button>
         </mdui-top-app-bar>
         <div class="main">
@@ -301,6 +301,7 @@ mdui-divider {
 .main {
     min-width: 300px;
     display: flex;
+    overflow: hidden;
 }
 
 p {
