@@ -1,5 +1,6 @@
 <script setup>
 import AppBar from './components/AppBar.vue';
+import Theme from './components/Theme.vue';
 
 </script>
 
@@ -12,6 +13,7 @@ import AppBar from './components/AppBar.vue';
       </div>
     </mdui-layout-main>
   </mdui-layout>
+  <Theme />
 </template>
 
 <style scoped>

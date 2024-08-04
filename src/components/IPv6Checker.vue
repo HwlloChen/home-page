@@ -1,6 +1,6 @@
 <template>
     <mdui-tooltip :content="tip" placement="bottom-end">
-        <mdui-chip id="ipchip" target="_blank" icon="question_mark">
+        <mdui-chip id="ipchip" target="_blank" icon="question_mark" :class="{'glass': bgImage}">
             {{ info }}
         </mdui-chip>
     </mdui-tooltip>
@@ -9,6 +9,7 @@
 <script setup>
 import { $ } from 'mdui/jq.js';
 import { onMounted, ref } from 'vue';
+import { bgImage } from './Theme.vue';
 
 const info = ref('未知IP状态')
 const tip = ref("？？？？？")

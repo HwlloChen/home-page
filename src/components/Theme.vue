@@ -1,12 +1,9 @@
 <template>
-    <mdui-tooltip :content="tip">
-        <mdui-button-icon :icon="brightness_icon" @click="changeTheme"></mdui-button-icon>
-    </mdui-tooltip>
-    <mdui-dialog close-on-overlay-click close-on-esc id="colorDialog">
-        <mdui-top-app-bar slot="header">
+    <mdui-dialog close-on-overlay-click close-on-esc id="colorDialog" :class="{ 'dialog-glass': bgImage }">
+        <mdui-top-app-bar slot="header" :class="{ 'dialog-glass': bgImage }">
             <mdui-button-icon icon="close"
                 onclick="document.getElementById('colorDialog').open = false;"></mdui-button-icon>
-            <mdui-top-app-bar-title>设置主题</mdui-top-app-bar-title>
+            <mdui-top-app-bar-title>主题设置</mdui-top-app-bar-title>
             <mdui-button variant="tonal" @click="saveTheme">保存</mdui-button>
         </mdui-top-app-bar>
         <div class="main">
@@ -34,35 +31,12 @@
 
 <script setup>
 import { getCookie, setCookie } from '@/utils/cookie';
-import { getColorFromImage, observeResize, setColorScheme, setTheme, snackbar } from 'mdui';
+import { getColorFromImage, observeResize, setColorScheme, snackbar } from 'mdui';
 import { onMounted, ref } from 'vue';
 import Compressor from 'compressorjs';
 
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import Pickr from '@simonwep/pickr';
-
-const tip = ref("明暗主题")
-const brightness_icon = ref()
-
-/**
- * 设置明暗主题
- */
-const brightness_modes = ['auto', 'light', 'dark']
-if (!brightness_modes.includes(getCookie("theme"))) {
-    //theme没有被储存过或是不合法
-    setCookie("theme", "auto"); //默认为auto
-}
-setTheme(getCookie("theme"))
-brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(getCookie("theme"))]
-tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(getCookie("theme"))]
-const changeTheme = () => {
-    var value = brightness_modes.indexOf(getCookie("theme")) + 1;
-    if (value > 2) value = 0;
-    setCookie("theme", brightness_modes[value])
-    setTheme(getCookie("theme"))
-    brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(getCookie("theme"))]
-    tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(getCookie("theme"))]
-}
 
 
 /**
@@ -85,18 +59,23 @@ const saveTheme = () => {
     const chkbox = document.getElementById("chkbox")
     const chkStste = String(chkbox.hasAttribute("checked"))
 
-    if (chkStste) {
+    if (chkStste === "true") {
         try {
             localStorage.setItem("background", imgElement.src)
+            document.body.style.backgroundImage = `url('${imgElement.src}')`
         } catch (e) {
             snackbar({ message: "图片保存失败！请考虑手动压缩图片(图片大小 <= 5MB)后再试。", autoCloseDelay: 3000 })
             console.warn(e)
             return;
         }
+    } else {
+        localStorage.removeItem("background")
+        document.body.style.backgroundImage = 'none';
     }
 
     setCookie("color", color.value)
     setCookie("bgImage", chkStste)
+    bgImage.value = (chkStste === "true")
 
     setColorScheme(color.value)
 
@@ -104,6 +83,20 @@ const saveTheme = () => {
 }
 
 onMounted(() => {
+
+    if (bgImage.value) {
+        imgElement.src = localStorage.getItem("background")
+        const imageDiv = document.getElementById('color-wallpaper-div')
+        imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
+        document.body.style.backgroundImage = `url('${imgElement.src}')`
+        setTimeout(() => {
+            // 添加延时防止操作失败
+            const chkbox = document.getElementById("chkbox")
+            chkbox.setAttribute("checked", true)
+            chkbox.removeAttribute("disabled")
+        }, 50);
+    }
+
     document.getElementById('color_imageInput').addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file) {
@@ -171,7 +164,7 @@ onMounted(() => {
 
             // Main components
             preview: true,
-            opacity: true,
+            opacity: false,
             hue: true,
 
             interaction: {
@@ -225,17 +218,6 @@ onMounted(() => {
             });
         }
     })
-    
-    if (getCookie("bgImage") === "true") {
-        imgElement.src = localStorage.getItem("background")
-        const chkbox = document.getElementById("chkbox")
-        chkbox.setAttribute("checked", true)
-        const imageDiv = document.getElementById('color-wallpaper-div')
-        imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
-    } else {
-        localStorage.removeItem("background")
-    }
-
 })
 </script>
 
@@ -248,6 +230,8 @@ export const openDialog = () => {
     })
     dialog.addEventListener("close", () => { dialogObserver.unobserve(); })
 }
+
+export const bgImage = ref(getCookie("bgImage") === "true")
 </script>
 <style scoped>
 #colorShow {
@@ -257,7 +241,7 @@ export const openDialog = () => {
     padding: .7rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     .main {
         width: 95%;
         height: 100%;
@@ -276,7 +260,7 @@ export const openDialog = () => {
     }
 }
 
-@media (min-width: 601px) {
+@media (min-width: 701px) {
     .main {
         max-width: 512px;
         width: 65vw;
@@ -301,7 +285,7 @@ mdui-divider {
 .main {
     min-width: 300px;
     display: flex;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 p {
