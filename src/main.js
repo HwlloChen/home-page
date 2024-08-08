@@ -3,6 +3,9 @@ import 'mdui';
 
 import './assets/main.css'
 
+import Pace from 'pace-js';
+Pace.start()
+
 import Aos from 'aos';
 
 import { createApp } from 'vue'

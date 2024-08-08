@@ -4,7 +4,7 @@
             <mdui-button-icon icon="close"
                 onclick="document.getElementById('colorDialog').open = false;"></mdui-button-icon>
             <mdui-top-app-bar-title>主题设置</mdui-top-app-bar-title>
-            <mdui-button variant="tonal" @click="saveTheme">保存</mdui-button>
+            <mdui-button variant="elevated" @click="saveTheme">保存</mdui-button>
         </mdui-top-app-bar>
         <div class="main">
             <p>

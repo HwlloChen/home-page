@@ -13,6 +13,8 @@
     "aos": "^2.3.4",
     "compressorjs": "^1.2.1",
     "mdui": "^2.1.2",
+    "pace": "^0.0.4",
+    "pace-js": "^1.2.4",
     "vue": "^3.4.29"
   },
   "devDependencies": {
