@@ -1,6 +1,7 @@
 <script setup>
 import AppBar from './components/AppBar.vue';
 import Theme from './components/Theme.vue';
+import Yiyan from './components/Yiyan.vue';
 
 </script>
 
@@ -9,7 +10,7 @@ import Theme from './components/Theme.vue';
     <AppBar />
     <mdui-layout-main>
       <div class="main">
-        some thing
+        <Yiyan />
       </div>
     </mdui-layout-main>
   </mdui-layout>
@@ -18,8 +19,9 @@ import Theme from './components/Theme.vue';
 
 <style scoped>
 .main {
-  height: 1000px;
+  /* height: 1000px; */
   overflow: auto;
+  display: flex;
 }
 
 mdui-layout {

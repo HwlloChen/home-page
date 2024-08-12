@@ -38,50 +38,6 @@ import Compressor from 'compressorjs';
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import Pickr from '@simonwep/pickr';
 
-
-/**
- * 颜色主题
- */
-
-if (getCookie("color").length <= 2) {
-    //颜色主题没有被初始化
-    setCookie("color", "#6750A4");
-}
-
-const color = ref(getCookie("color"))
-setColorScheme(getCookie("color"));
-const imgElement = new Image();
-
-/**
- * 保存颜色主题
- */
-const saveTheme = () => {
-    const chkbox = document.getElementById("chkbox")
-    const chkStste = String(chkbox.hasAttribute("checked"))
-
-    if (chkStste === "true") {
-        try {
-            localStorage.setItem("background", imgElement.src)
-            document.body.style.backgroundImage = `url('${imgElement.src}')`
-        } catch (e) {
-            snackbar({ message: "图片保存失败！请考虑手动压缩图片(图片大小 <= 5MB)后再试。", autoCloseDelay: 3000 })
-            console.warn(e)
-            return;
-        }
-    } else {
-        localStorage.removeItem("background")
-        document.body.style.backgroundImage = 'none';
-    }
-
-    setCookie("color", color.value)
-    setCookie("bgImage", chkStste)
-    bgImage.value = (chkStste === "true")
-
-    setColorScheme(color.value)
-
-    snackbar({ placement: "top-end", message: "已保存并应用主题设置！", autoCloseDelay: 3000 })
-}
-
 onMounted(() => {
 
     if (bgImage.value) {
@@ -222,6 +178,49 @@ onMounted(() => {
 </script>
 
 <script>
+/**
+ * 颜色主题
+ */
+
+ if (getCookie("color").length <= 2) {
+    //颜色主题没有被初始化
+    setCookie("color", "#6750A4");
+}
+
+const color = ref(getCookie("color"))
+setColorScheme(getCookie("color"));
+const imgElement = new Image();
+
+/**
+ * 保存颜色主题
+ */
+const saveTheme = () => {
+    const chkbox = document.getElementById("chkbox")
+    const chkStste = String(chkbox.hasAttribute("checked"))
+
+    if (chkStste === "true") {
+        try {
+            localStorage.setItem("background", imgElement.src)
+            document.body.style.backgroundImage = `url('${imgElement.src}')`
+        } catch (e) {
+            snackbar({ message: "图片保存失败！请考虑手动压缩图片(图片大小 <= 5MB)后再试。", autoCloseDelay: 3000 })
+            console.warn(e)
+            return;
+        }
+    } else {
+        localStorage.removeItem("background")
+        document.body.style.backgroundImage = 'none';
+    }
+
+    setCookie("color", color.value)
+    setCookie("bgImage", chkStste)
+    bgImage.value = (chkStste === "true")
+
+    setColorScheme(color.value)
+
+    snackbar({ placement: "top-end", message: "已保存并应用主题设置！", autoCloseDelay: 3000 })
+}
+
 export const openDialog = () => {
     const dialog = document.getElementById("colorDialog")
     dialog.open = true;
