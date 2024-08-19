@@ -1,7 +1,7 @@
 <template>
-    <mdui-top-app-bar scroll-behavior="elevate" id="appbar" :class="{'glass': bgImage}">
+    <mdui-top-app-bar scroll-behavior="elevate" id="appbar" :class="{ 'glass': bgImage }">
         <div style="width: 5px;"></div>
-        <mdui-top-app-bar-title>ChenServer</mdui-top-app-bar-title>
+        <mdui-top-app-bar-title>{{ globalVars.siteName }}</mdui-top-app-bar-title>
         <div style="flex-grow: 1"></div>
         <IPv6Checker />
         <mdui-tooltip :content="tip">
@@ -20,9 +20,10 @@
 import IPv6Checker from './IPv6Checker.vue';
 import { getCookie, setCookie } from '@/utils/cookie';
 import { setTheme } from 'mdui';
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { openDialog } from './Theme.vue';
 import { bgImage } from './Theme.vue';
+import { globalVars } from '@/utils/globalVars';
 
 const tip = ref("明暗主题")
 const brightness_icon = ref()
@@ -48,10 +49,20 @@ const changeTheme = () => {
 }
 </script>
 
+<script>
+
+document.title = globalVars.siteName
+
+</script>
+
 <style scoped>
 mdui-top-app-bar {
     position: fixed !important;
     height: 4rem;
     align-items: center;
+}
+
+mdui-button-icon {
+    transition: font-variation-settings .2s cubic-bezier(.2, 0, 0, 1);
 }
 </style>

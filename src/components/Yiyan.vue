@@ -11,20 +11,28 @@ onMounted(() => {
             .then(data => {
                 hitokoto = {
                     text: data.hitokoto,
-                    who: data.hitokoto,
+                    who: data.from_who,
+                    from: data.from
                 }
-                const yiyan = document.getElementById("yiyan")
-                yiyan.innerHTML = ''
-                yiyan.classList.remove("blink")
+                const blinker = document.getElementById("blinker")
+                YIYAN.value = ''
+                blinker.classList.remove("blink")
                 const speed = 120; // 打字速度，单位为毫秒
                 let index = 0;
                 function typeWriter() {
                     if (index < hitokoto.text.length) {
-                        yiyan.innerHTML += hitokoto.text.charAt(index);
+                        YIYAN.value += hitokoto.text.charAt(index);
                         index++;
                         setTimeout(typeWriter, speed);
                     } else {
-                        yiyan.classList.add("blink")
+                        const yiyan_from = document.getElementById("yiyan-from")
+                        if ((typeof hitokoto.who) === "string" && hitokoto.who.length >= 1) {
+                            YIYAN_FROM.value = `——— ${hitokoto.who}`
+                        }else{
+                            YIYAN_FROM.value = `出自《${hitokoto.from}》`
+                        }
+                        yiyan_from.style.opacity = "1"
+                        blinker.classList.add("blink")
                     }
                 }
                 typeWriter()
@@ -38,33 +46,97 @@ onMounted(() => {
 </script>
 
 <template>
-    <div id="yiyan" class="ubuntu-medium blink">
-        <!--Typing Yiyan-->
-        {{ YIYAN }}
+    <div class="yiyan-box ubuntu-medium">
+        <div id="yiyan">
+            <!--Typing Yiyan-->
+            {{ YIYAN }}
+            <span class="blink" id="blinker"></span>
+        </div>
+        <div id="yiyan-from-box">
+            <div id="yiyan-from" class="ubuntu-light">
+                {{ YIYAN_FROM }}
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 const YIYAN = ref("Hitokotooooo...")
+const YIYAN_FROM = ref("")
 var showed = false
 var hitokoto = undefined
 </script>
 
 <style lang="less" scoped>
-#yiyan {
-    white-space: nowrap;
-    border-right: .25rem solid;
-    padding-right: .2rem;
-    font-size: 3rem;
-    margin: 3rem;
-    margin-top: 2.5rem;
-    width: fit-content;
+#yiyan-from-box {
+    width: 100%;
+    padding-top: 0.3rem;
+    padding-right: 3rem;
+
+    font-size: 1.35rem;
+
+    @media (max-width: 600px) {
+        padding-right: 1.3rem;
+        font-size: 1.15rem;
+    }
+
+    @media (max-width: 1080px) and (min-width: 601px) {
+        padding-right: 2rem;
+        font-size: 1.25rem;
+    }
+}
+
+#yiyan-from {
+    color: grey;
+    float: right;
+    opacity: 0;
+    /* 初始状态为透明 */
+    transition: opacity 1.5s var(--mdui-motion-easing-standard);
+    /* 设置过渡效果 */
+}
+
+.yiyan-box {
+    width: 100vw;
     overflow: hidden;
-    border-color: rgb(var(--mdui-color-primary));
+    display: flex;
+    align-items: center; // 单行垂直居中
+    flex-wrap: wrap; // 允许多行内容
+    align-content: center; // 多行内容整体垂直居中
+
+    @media (max-width: 600px) {
+        justify-content: center; // 水平居中
+        font-family: "Ubuntu", sans-serif !important;
+        font-weight: 400 !important;
+        font-style: normal !important;
+    }
+}
+
+#yiyan {
+    margin: 2.5rem 3rem 0 3rem;
+    font-size: 3rem;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: inherit;
+
+    @media (max-width: 600px) {
+        font-size: 1.8rem;
+        margin: 1.8rem 1.3rem 0 1.3rem;
+    }
+
+    @media (max-width: 1080px) and (min-width: 601px) {
+        font-size: 2.5rem;
+        margin: 2.2rem 2rem 0 2rem;
+    }
+}
+
+#blinker {
+    border-right: .25rem solid rgb(var(--mdui-color-primary));
+    width: 0;
 }
 
 .blink {
-    /* 为打字效果添加一个闪烁光标 */
+    // 为打字效果添加一个闪烁光标
     animation: blink-caret 1.1s cubic-bezier(0.7, 0, 0, 1) infinite;
 }
 
@@ -80,35 +152,22 @@ var hitokoto = undefined
     }
 }
 
-/* 针对深色主题 */
-.mdui-theme-dark {
-    #yiyan {
+/* 针对不同主题的 text-shadow 处理 */
+.mdui-theme-light #yiyan {
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+.mdui-theme-dark #yiyan {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.mdui-theme-auto #yiyan {
+    @media (prefers-color-scheme: dark) {
         text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
     }
-}
 
-/* 针对浅色主题 */
-.mdui-theme-light {
-    #yiyan {
-        text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-    }
-}
-
-.mdui-theme-auto {
-
-    /* 针对深色主题 */
-    @media (prefers-color-scheme: dark) {
-        #yiyan {
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-        }
-    }
-
-
-    /* 针对浅色主题 */
     @media (prefers-color-scheme: light) {
-        #yiyan {
-            text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-        }
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
     }
 }
 </style>

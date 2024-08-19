@@ -9,8 +9,9 @@ import Yiyan from './components/Yiyan.vue';
   <mdui-layout>
     <AppBar />
     <mdui-layout-main>
+      <Yiyan />
       <div class="main">
-        <Yiyan />
+        
       </div>
     </mdui-layout-main>
   </mdui-layout>
