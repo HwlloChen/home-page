@@ -11,6 +11,7 @@
             <mdui-button-icon slot="trigger" icon="more_vert"></mdui-button-icon>
             <mdui-menu>
                 <mdui-menu-item @click="openDialog">主题设置</mdui-menu-item>
+                <mdui-menu-item @click="clearlocalStorage">清除localStorage</mdui-menu-item>
             </mdui-menu>
         </mdui-dropdown>
     </mdui-top-app-bar>
@@ -19,7 +20,7 @@
 <script setup>
 import IPv6Checker from './IPv6Checker.vue';
 import { getCookie, setCookie } from '@/utils/cookie';
-import { setTheme } from 'mdui';
+import { confirm, setTheme } from 'mdui';
 import { ref, inject } from 'vue';
 import { openDialog } from './Theme.vue';
 import { bgImage } from './Theme.vue';
@@ -32,26 +33,33 @@ const brightness_icon = ref()
  * 设置明暗主题
  */
 const brightness_modes = ['auto', 'light', 'dark']
-if (!brightness_modes.includes(getCookie("theme"))) {
-    //theme没有被储存过或是不合法
-    setCookie("theme", "auto"); //默认为auto
-}
-setTheme(getCookie("theme"))
-brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(getCookie("theme"))]
-tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(getCookie("theme"))]
+setTheme(globalVars.theme.light)
+brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(globalVars.theme.light)]
+tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(globalVars.theme.light)]
 const changeTheme = () => {
-    var value = brightness_modes.indexOf(getCookie("theme")) + 1;
+    var value = brightness_modes.indexOf(globalVars.theme.light) + 1;
     if (value > 2) value = 0;
-    setCookie("theme", brightness_modes[value])
-    setTheme(getCookie("theme"))
-    brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(getCookie("theme"))]
-    tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(getCookie("theme"))]
+    globalVars.theme.light = brightness_modes[value]
+    setTheme(globalVars.theme.light)
+    brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(globalVars.theme.light)]
+    tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(globalVars.theme.light)]
+    localStorage.setItem("theme", JSON.stringify(globalVars.theme))
 }
 </script>
 
 <script>
 
 document.title = globalVars.siteName
+
+const clearlocalStorage = () => {
+    confirm({
+        headline: "清除数据？",
+        description: "这将导致你的所有本地自定义信息丢失！",
+        confirmText: "清除",
+        cancelText: "取消",
+        onConfirm: () => { localStorage.clear(); location.reload() },
+    });
+}
 
 </script>
 

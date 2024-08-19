@@ -34,7 +34,7 @@ const getIP = () => {
         },
         error: function (xhr, status, e) {
             console.log(xhr, status, e)
-            fetch('https://api6.ipify.org', { method: 'GET' }) // 使用 HEAD 请求来减少数据传输
+            fetch('https://api6.ipify.org', { method: 'GET' })
                 .then(response => {
                     if (response.ok) {
                         info.value = `ChenServer服务异常！`

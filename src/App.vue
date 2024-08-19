@@ -1,4 +1,5 @@
 <script setup>
+import './utils/init'
 import AppBar from './components/AppBar.vue';
 import Theme from './components/Theme.vue';
 import Yiyan from './components/Yiyan.vue';

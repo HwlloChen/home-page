@@ -9,13 +9,14 @@ Pace.start()
 import { createApp, reactive } from 'vue'
 import App from './App.vue'
 
+import { globalVars } from './utils/globalVars';
+
 const app = createApp(App)
 
 // import Aos from 'aos';
 // Aos.init();
 
 // 确保inject也能使用globalVars
-import { globalVars } from './utils/globalVars';
 app.provide('globalVars', globalVars)
 
 app.mount('#app')

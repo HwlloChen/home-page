@@ -112,7 +112,7 @@ var hitokoto = undefined
 }
 
 #yiyan {
-    margin: 2.5rem 3rem 0 3rem;
+    padding: 2.5rem 3rem 10px 3rem;
     font-size: 3rem;
     overflow: hidden;
     word-wrap: break-word;
@@ -121,18 +121,19 @@ var hitokoto = undefined
 
     @media (max-width: 600px) {
         font-size: 1.8rem;
-        margin: 1.8rem 1.3rem 0 1.3rem;
+        padding: 1.8rem 1.3rem 10px 1.3rem;
     }
 
     @media (max-width: 1080px) and (min-width: 601px) {
         font-size: 2.5rem;
-        margin: 2.2rem 2rem 0 2rem;
+        padding: 2.2rem 2rem 10px 2rem;
     }
 }
 
 #blinker {
     border-right: .25rem solid rgb(var(--mdui-color-primary));
     width: 0;
+    padding-right: 2px;
 }
 
 .blink {

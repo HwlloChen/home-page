@@ -30,18 +30,18 @@
 </template>
 
 <script setup>
-import { getCookie, setCookie } from '@/utils/cookie';
 import { getColorFromImage, observeResize, setColorScheme, snackbar } from 'mdui';
 import { onMounted, ref } from 'vue';
 import Compressor from 'compressorjs';
 
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import Pickr from '@simonwep/pickr';
+import { globalVars } from '@/utils/globalVars';
 
 onMounted(() => {
 
     if (bgImage.value) {
-        imgElement.src = localStorage.getItem("background")
+        imgElement.src = globalVars.theme.bgImage
         const imageDiv = document.getElementById('color-wallpaper-div')
         imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
         document.body.style.backgroundImage = `url('${imgElement.src}')`
@@ -101,7 +101,6 @@ onMounted(() => {
 
         }
     });
-    const dialog = document.getElementById("colorDialog")
     const pickr = Pickr.create({
         el: '#color-picker',
         theme: 'nano', // or 'monolith', or 'nano'
@@ -179,20 +178,15 @@ onMounted(() => {
 
 <script>
 /**
- * 颜色主题
+ * 主题配置
  */
 
- if (getCookie("color").length <= 2) {
-    //颜色主题没有被初始化
-    setCookie("color", "#6750A4");
-}
-
-const color = ref(getCookie("color"))
-setColorScheme(getCookie("color"));
+const color = ref(globalVars.theme.color)
+setColorScheme(color.value);
 const imgElement = new Image();
 
 /**
- * 保存颜色主题
+ * 保存主题
  */
 const saveTheme = () => {
     const chkbox = document.getElementById("chkbox")
@@ -200,7 +194,8 @@ const saveTheme = () => {
 
     if (chkStste === "true") {
         try {
-            localStorage.setItem("background", imgElement.src)
+            globalVars.theme.bgImage = imgElement.src
+            localStorage.setItem("theme", JSON.stringify(globalVars.theme))
             document.body.style.backgroundImage = `url('${imgElement.src}')`
         } catch (e) {
             snackbar({ message: "图片保存失败！请考虑手动压缩图片(图片大小 <= 5MB)后再试。", autoCloseDelay: 3000 })
@@ -208,15 +203,16 @@ const saveTheme = () => {
             return;
         }
     } else {
-        localStorage.removeItem("background")
+        globalVars.theme.bgImage = false
         document.body.style.backgroundImage = 'none';
     }
 
-    setCookie("color", color.value)
-    setCookie("bgImage", chkStste)
-    bgImage.value = (chkStste === "true")
+    globalVars.theme.color = color.value
+    bgImage.value = (globalVars.theme.bgImage !== false)
 
     setColorScheme(color.value)
+
+    localStorage.setItem("theme", JSON.stringify(globalVars.theme))
 
     snackbar({ placement: "top-end", message: "已保存并应用主题设置！", autoCloseDelay: 3000 })
 }
@@ -230,7 +226,7 @@ export const openDialog = () => {
     dialog.addEventListener("close", () => { dialogObserver.unobserve(); })
 }
 
-export const bgImage = ref(getCookie("bgImage") === "true")
+export const bgImage = ref(globalVars.theme.bgImage !== false)
 </script>
 <style scoped>
 #colorShow {
