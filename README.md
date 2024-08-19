@@ -7,7 +7,7 @@ ChenServer的新主页，目前处于项目初期。
 
 使用 [Vuejs](https://vuejs.org) 和 [mdui](https://mdui.org)
 
-~~代码比较屎~~（有些地方vue和jquery混用）
+~~代码比较屎~~（我也是边做边学）
 
 [Demo Page(https://chenserver.top/new)](https://chenserver.top/new)
 
