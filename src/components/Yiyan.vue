@@ -155,7 +155,7 @@ var hitokoto = undefined
 
 /* 针对不同主题的 text-shadow 处理 */
 .mdui-theme-light #yiyan {
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
 }
 
 .mdui-theme-dark #yiyan {
@@ -168,7 +168,7 @@ var hitokoto = undefined
     }
 
     @media (prefers-color-scheme: light) {
-        text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
 }
 </style>

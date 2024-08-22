@@ -1,7 +1,10 @@
 <template>
     <mdui-top-app-bar scroll-behavior="elevate" id="appbar" :class="{ 'glass': bgImage }">
         <div style="width: 5px;"></div>
-        <mdui-top-app-bar-title>{{ globalVars.siteName }}</mdui-top-app-bar-title>
+        <mdui-top-app-bar-title>
+            {{ globalVars.siteName }}
+            <span class="subtitle" id="mainsubtitle">{{ subtitleText }}</span>
+        </mdui-top-app-bar-title>
         <div style="flex-grow: 1"></div>
         <IPv6Checker />
         <mdui-tooltip :content="tip">
@@ -19,9 +22,8 @@
 
 <script setup>
 import IPv6Checker from './IPv6Checker.vue';
-import { getCookie, setCookie } from '@/utils/cookie';
 import { confirm, setTheme } from 'mdui';
-import { ref, inject } from 'vue';
+import { onMounted, ref } from 'vue';
 import { openDialog } from './Theme.vue';
 import { bgImage } from './Theme.vue';
 import { globalVars } from '@/utils/globalVars';
@@ -45,10 +47,43 @@ const changeTheme = () => {
     tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(globalVars.theme.light)]
     localStorage.setItem("theme", JSON.stringify(globalVars.theme))
 }
+
+onMounted(() => {
+    function formatLocation(l) {
+        var args = l.split("|")
+        args.pop()
+        args = args.filter(s => s != "0") //去除空值
+        for (var i = 1; i < args.length; i++) if (args[i] == args[i - 1]) args.splice(i, 1) //去重
+        args.reverse() //倒序（选取两个小地方）
+        var sum = ""
+        // 获取最多两个量
+        var i = 0
+        for (const e of args) {
+            if (i >= 2) break;
+            if (sum.length) sum = e + " " + sum; else sum += e;
+            i++;
+        }
+
+        return sum
+    }
+
+    fetch(`${globalVars.backpoint}/ip`)
+        .then((response) => response.json())
+        .then((data) => {
+            subtitle.text(`欢迎来自「${formatLocation(data.location)}」的朋友！`)
+            setTimeout(() => {
+                subtitle.clear()
+            }, 4000);
+        })
+        .catch((e) => {
+            console.warn(e)
+        })
+})
 </script>
 
 <script>
 
+const subtitleText = ref("")
 document.title = globalVars.siteName
 
 const clearlocalStorage = () => {
@@ -61,9 +96,32 @@ const clearlocalStorage = () => {
     });
 }
 
+export const subtitle = {
+    text(text) {
+        const d = document.getElementById("mainsubtitle")
+        if (subtitleText.value.length >= 1) {
+            d.style.opacity = 0;
+            setTimeout(() => {
+                subtitleText.value = text
+                d.style.opacity = 1
+            }, 500);
+        } else {
+            subtitleText.value = text
+            d.style.opacity = 1;
+        }
+    },
+    clear() {
+        const d = document.getElementById("mainsubtitle")
+        d.style.opacity = 0;
+        setTimeout(() => {
+            subtitleText.value = ""
+        }, 700);
+    }
+}
+
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 mdui-top-app-bar {
     position: fixed !important;
     height: 4rem;
@@ -72,5 +130,35 @@ mdui-top-app-bar {
 
 mdui-button-icon {
     transition: font-variation-settings .2s cubic-bezier(.2, 0, 0, 1);
+}
+
+.subtitle {
+    color: gray;
+    transition: opacity .85s var(--mdui-motion-easing-standard);
+    opacity: 0;
+
+    @media(max-width: 1080px) {
+        width: 100%;
+        display: block;
+        position: absolute;
+        font-size: var(--mdui-typescale-title-small-size);
+        font-weight: var(--mdui-typescale-body-small-weight);
+        letter-spacing: var(--mdui-typescale-body-small-tracking);
+        line-height: 0 !important;
+    }
+
+    @media (min-width: 1081px) {
+        display: inline-block;
+        font-size: var(--mdui-typescale-title-medium-size);
+        font-weight: var(--mdui-typescale-body-small-weight);
+        letter-spacing: var(--mdui-typescale-body-small-tracking);
+        line-height: var(--mdui-typescale-body-small-line-height);
+        padding-left: .4em;
+        overflow: hidden;
+    }
+
+    
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 </style>

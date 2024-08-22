@@ -10,11 +10,12 @@
 import { $ } from 'mdui/jq.js';
 import { onMounted, ref } from 'vue';
 import { bgImage } from './Theme.vue';
+import { globalVars } from '@/utils/globalVars';
 
 const info = ref('未知IP状态')
 const tip = ref("？？？？？")
 
-const testUrl = "https://www.chenserver.top:81/get_ip"
+const testUrl = `${globalVars.backpoint_v6}/get_ip`
 
 const getIP = () => {
     info.value = '正在检测您的IP地址'
