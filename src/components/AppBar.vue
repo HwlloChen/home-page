@@ -134,7 +134,7 @@ mdui-button-icon {
 
 .subtitle {
     color: gray;
-    transition: opacity .85s var(--mdui-motion-easing-standard);
+    transition: all .85s var(--mdui-motion-easing-standard);
     opacity: 0;
 
     @media(max-width: 1080px) {

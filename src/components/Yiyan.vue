@@ -87,16 +87,18 @@ var hitokoto = undefined
 }
 
 #yiyan-from {
+    height: 2rem;
     color: grey;
     float: right;
     opacity: 0;
     /* 初始状态为透明 */
     transition: opacity 1.5s var(--mdui-motion-easing-standard);
     /* 设置过渡效果 */
+    transition: font-size .3s var(--mdui-motion-easing-standard);
 }
 
 .yiyan-box {
-    width: 100vw;
+    width: 100%;
     overflow: hidden;
     display: flex;
     align-items: center; // 单行垂直居中
@@ -118,6 +120,7 @@ var hitokoto = undefined
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: inherit;
+    transition: font-size .3s var(--mdui-motion-easing-standard);
 
     @media (max-width: 600px) {
         font-size: 1.8rem;
