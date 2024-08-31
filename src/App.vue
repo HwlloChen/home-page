@@ -1,10 +1,19 @@
 <script setup>
 import './utils/init'
 import AppBar from './components/AppBar.vue';
-import Theme from './components/Theme.vue';
+import Theme, { useGlass } from './components/Theme.vue';
 import Yiyan from './components/Yiyan.vue';
 import Services from './components/Services.vue';
 import AboutMe from './components/AboutMe.vue';
+import { onMounted, watch } from 'vue';
+
+onMounted(() => {
+	//绑定glass类到body
+	useGlass.value ? document.body.classList.add("glass") : document.body.classList.remove("glass")
+	watch(useGlass, (v) => {
+		v ? document.body.classList.add("glass") : document.body.classList.remove("glass")
+	})
+})
 
 </script>
 
@@ -23,9 +32,8 @@ import AboutMe from './components/AboutMe.vue';
 			</div>
 
 		</mdui-layout-main>
-
+		<Theme />
 	</mdui-layout>
-	<Theme />
 </template>
 
 <style lang="less" scoped>

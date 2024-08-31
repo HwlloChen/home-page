@@ -1,7 +1,7 @@
 import 'mdui/mdui.css';
 import 'mdui';
 
-import './assets/main.css'
+import './assets/main.less'
 
 import Pace from 'pace-js';
 Pace.start()

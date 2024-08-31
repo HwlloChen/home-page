@@ -8,6 +8,7 @@ const globalVars = reactive({
         light: undefined,
         color: undefined,
         bgImage: undefined,
+        useGlass: undefined,
     },
 })
 

@@ -1,6 +1,6 @@
 <template>
     <mdui-tooltip :content="tip" placement="bottom-end">
-        <mdui-chip id="ipchip" target="_blank" icon="question_mark" :class="{'glass': bgImage}">
+        <mdui-chip id="ipchip" target="_blank" icon="question_mark">
             {{ info }}
         </mdui-chip>
     </mdui-tooltip>
@@ -9,7 +9,6 @@
 <script setup>
 import { $ } from 'mdui/jq.js';
 import { onMounted, ref } from 'vue';
-import { bgImage } from './Theme.vue';
 import { globalVars } from '@/utils/globalVars';
 
 const info = ref('未知IP状态')
@@ -65,7 +64,7 @@ const getIP = () => {
 onMounted(getIP)
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /* 针对手机设备 */
 @media (max-width: 600px) {
     mdui-chip, mdui-tooltip {
@@ -86,6 +85,12 @@ onMounted(getIP)
     mdui-chip {
         margin-left: 6px;
         margin-right: 6px;
+    }
+}
+
+.glass {
+    mdui-chip {
+        background-color: rgba(var(--mdui-color-surface-container), 0.1);
     }
 }
 </style>

@@ -4,6 +4,7 @@ const defaultTheme = {
     light: "auto",
     color: "#6750A4",
     bgImage: false,
+    useGlass: false,
 }
 if (localStorage.getItem("theme") == null) {
     //预创建默认主题配置

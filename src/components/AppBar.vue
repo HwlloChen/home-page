@@ -1,5 +1,5 @@
 <template>
-    <mdui-top-app-bar scroll-behavior="elevate" id="appbar" :class="{ 'glass': bgImage }">
+    <mdui-top-app-bar scroll-behavior="elevate" id="appbar">
         <div style="width: 5px;"></div>
         <mdui-top-app-bar-title>
             {{ globalVars.siteName }}
@@ -25,7 +25,6 @@ import IPv6Checker from './IPv6Checker.vue';
 import { confirm, setTheme } from 'mdui';
 import { onMounted, ref } from 'vue';
 import { openDialog } from './Theme.vue';
-import { bgImage } from './Theme.vue';
 import { globalVars } from '@/utils/globalVars';
 
 const tip = ref("明暗主题")
@@ -126,6 +125,21 @@ mdui-top-app-bar {
     position: fixed !important;
     height: 4rem;
     align-items: center;
+    transition: background-color backdrop-filter 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.glass {
+    mdui-top-app-bar {
+        background-color: rgba(var(--mdui-color-surface-container), 0.8);
+        backdrop-filter: blur(7.5px);
+        -webkit-backdrop-filter: blur(7.5px);
+    }
+
+    mdui-top-app-bar[scrolling] {
+        background-color: rgba(var(--mdui-color-surface-container), 0.35);
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+    }
 }
 
 mdui-button-icon {
@@ -157,7 +171,7 @@ mdui-button-icon {
         overflow: hidden;
     }
 
-    
+
     white-space: nowrap;
     text-overflow: ellipsis;
 }

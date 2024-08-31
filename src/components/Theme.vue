@@ -1,6 +1,6 @@
 <template>
-    <mdui-dialog close-on-overlay-click close-on-esc id="colorDialog" :class="{ 'dialog-glass': bgImage }">
-        <mdui-top-app-bar slot="header" :class="{ 'dialog-glass': bgImage }">
+    <mdui-dialog close-on-overlay-click close-on-esc id="colorDialog">
+        <mdui-top-app-bar slot="header">
             <mdui-button-icon icon="close"
                 onclick="document.getElementById('colorDialog').open = false;"></mdui-button-icon>
             <mdui-top-app-bar-title>主题设置</mdui-top-app-bar-title>
@@ -11,10 +11,12 @@
                 <span>颜色主题</span>
                 <br />
                 <mdui-button style="margin-top: .8rem;" id="color-picker" variant="tonal">打开颜色选择器</mdui-button>
-            <p>
+            <p style="margin-top: 8px;">
                 已选择的颜色: <span id="colorShow">{{ color }}</span>
             </p>
             <mdui-button style="margin-top: .8rem;" id="color-from-image" variant="tonal">从图片中提取颜色</mdui-button>
+            <br />
+            <mdui-checkbox id="useGlass" :="{ checked: useGlass }">亚克力材质</mdui-checkbox>
             </p>
             <mdui-divider vertical></mdui-divider>
             <p>
@@ -23,7 +25,7 @@
                 请选择一张壁纸
                 <input id="color_imageInput" type="file" accept="image/png, image/jpeg">
             </div>
-            <mdui-checkbox id="chkbox" disabled>使用该图片作为背景</mdui-checkbox>
+            <mdui-checkbox id="useImage" disabled>使用该图片作为背景</mdui-checkbox>
             </p>
         </div>
     </mdui-dialog>
@@ -39,17 +41,17 @@ import Pickr from '@simonwep/pickr';
 import { globalVars } from '@/utils/globalVars';
 
 onMounted(() => {
-
-    if (bgImage.value) {
+    const useImageChkBox = document.getElementById("useImage")
+    if (globalVars.theme.bgImage !== false) {
+        console.log("byd")
         imgElement.src = globalVars.theme.bgImage
         const imageDiv = document.getElementById('color-wallpaper-div')
         imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
         document.body.style.backgroundImage = `url('${imgElement.src}')`
         setTimeout(() => {
             // 添加延时防止操作失败
-            const chkbox = document.getElementById("chkbox")
-            chkbox.setAttribute("checked", true)
-            chkbox.removeAttribute("disabled")
+            useImageChkBox.setAttribute("checked", true)
+            useImageChkBox.removeAttribute("disabled")
         }, 50);
     }
 
@@ -67,9 +69,8 @@ onMounted(() => {
 
                     imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
 
-                    const chkbox = document.getElementById("chkbox")
-                    chkbox.setAttribute("disabled", true);
-                    chkbox.removeAttribute("checked")
+                    useImageChkBox.setAttribute("disabled", true);
+                    useImageChkBox.removeAttribute("checked")
                 };
 
                 reader.readAsDataURL(file);
@@ -87,8 +88,7 @@ onMounted(() => {
                         const imageDiv = document.getElementById('color-wallpaper-div')
                         imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
 
-                        const chkbox = document.getElementById("chkbox")
-                        chkbox.removeAttribute("disabled")
+                        useImageChkBox.removeAttribute("disabled")
                     };
 
                     reader.readAsDataURL(result);
@@ -189,10 +189,11 @@ const imgElement = new Image();
  * 保存主题
  */
 const saveTheme = () => {
-    const chkbox = document.getElementById("chkbox")
-    const chkStste = String(chkbox.hasAttribute("checked"))
+    const useImageChkBox = document.getElementById("useImage")
+    const useGlassChkBox = document.getElementById("useGlass")
+    const useImage = useImageChkBox.hasAttribute("checked")
 
-    if (chkStste === "true") {
+    if (useImage) {
         try {
             globalVars.theme.bgImage = imgElement.src
             localStorage.setItem("theme", JSON.stringify(globalVars.theme))
@@ -208,9 +209,10 @@ const saveTheme = () => {
     }
 
     globalVars.theme.color = color.value
-    bgImage.value = (globalVars.theme.bgImage !== false)
-
     setColorScheme(color.value)
+
+    globalVars.theme.useGlass = useGlassChkBox.hasAttribute("checked")
+    useGlass.value = globalVars.theme.useGlass
 
     localStorage.setItem("theme", JSON.stringify(globalVars.theme))
 
@@ -226,14 +228,55 @@ export const openDialog = () => {
     dialog.addEventListener("close", () => { dialogObserver.unobserve(); })
 }
 
-export const bgImage = ref(globalVars.theme.bgImage !== false)
+export const useGlass = ref(globalVars.theme.useGlass !== false)
 </script>
-<style scoped>
+<style lang="less" scoped>
 #colorShow {
     border-radius: var(--mdui-shape-corner-medium);
-    border: 0px;
+    border: 0;
     background-color: rgb(var(--mdui-color-primary-light));
     padding: .7rem;
+}
+
+.main {
+    min-width: 300px;
+    display: flex;
+    overflow-x: hidden;
+}
+
+p {
+    width: 100%;
+    margin: 0 1rem;
+}
+
+.color-wallpaper {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    background-size: cover;
+    background-position: center;
+    text-shadow: white .1em .1em .2em;
+    border-radius: var(--mdui-shape-corner-extra-small);
+    border: .0625rem solid rgb(var(--mdui-color-outline));
+    margin: .5rem auto;
+}
+
+.color-wallpaper input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0;
+    cursor: pointer;
+}
+
+mdui-divider {
+    height: auto;
+    width: 3px;
+    margin: .2rem;
 }
 
 @media (max-width: 700px) {
@@ -241,7 +284,6 @@ export const bgImage = ref(globalVars.theme.bgImage !== false)
         width: 95%;
         height: 100%;
         flex-direction: column;
-        /* 主轴方向设置为垂直 */
         justify-content: flex-start;
     }
 
@@ -260,58 +302,12 @@ export const bgImage = ref(globalVars.theme.bgImage !== false)
         max-width: 512px;
         width: 65vw;
         justify-content: space-between;
-        /* 子元素间隔均匀分布 */
         flex-direction: row;
-        /* 主轴方向设置为水平 */
     }
 
     .color-wallpaper {
         height: 8.15rem;
         width: 100%;
     }
-}
-
-mdui-divider {
-    height: auto;
-    width: 3px;
-    margin: .2rem
-}
-
-.main {
-    min-width: 300px;
-    display: flex;
-    overflow-x: hidden;
-}
-
-p {
-    width: 100%;
-    margin-left: 1rem;
-    margin-right: 1rem;
-}
-
-.color-wallpaper {
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-    background-size: cover;
-    background-position: center;
-    text-shadow: white .1em .1em .2em;
-    border-radius: var(--mdui-shape-corner-extra-small);
-    border: .0625rem solid rgb(var(--mdui-color-outline));
-    margin: .5rem 0rem;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.color-wallpaper input {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    opacity: 0;
-    cursor: pointer;
 }
 </style>

@@ -1,0 +1,38 @@
+@import url(font.css);
+@import url(pace-minimal.css);
+
+html {
+  transition: background-color 0.2s var(--mdui-motion-easing-standard);
+}
+
+body {
+  /* 背景图片覆盖整个页面 */
+  background-size: cover;
+  /* 背景图片不重复 */
+  background-repeat: no-repeat;
+  /* 背景图片固定位置 */
+  background-attachment: fixed;
+  /* 确保背景图片始终居中 */
+  background-position: center;
+  /* 取消边距确保全屏 */
+  margin: 0px;
+  min-height: 100vh;
+}
+
+.glass {
+  mdui-dialog {
+  &::part(overlay) {
+      backdrop-filter: blur(0.75px);
+  }
+
+  &::part(panel) {
+      background-color: rgba(var(--mdui-color-surface-container-high), 0.35);
+      backdrop-filter: blur(7.5px);
+      -webkit-backdrop-filter: blur(7.5px);
+  }
+
+  mdui-top-app-bar[slot="header"]{
+    background-color: rgba(var(--mdui-color-surface-container-high), 0.25);
+  }
+}
+}

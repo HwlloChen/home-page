@@ -1,6 +1,5 @@
 <!-- 网站上方一言 -->
 <script setup>
-import { bgImage } from "./Theme.vue";
 import { ref, onMounted } from "vue";
 
 onMounted(() => {
