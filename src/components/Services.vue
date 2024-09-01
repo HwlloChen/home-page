@@ -92,7 +92,7 @@ mdui-card {
 		content: '';
 		display: block;
 		width: 94%;
-		height: 75%;
+		height: 80%;
 		position: absolute;
 		top: 0;
 		right: 0;
@@ -108,7 +108,7 @@ mdui-card {
 
 	&.bg[hover]::before {
 		width: 98%;
-		height: 80%;
+		height: 85%;
 		opacity: 0.55;
 	}
 }
