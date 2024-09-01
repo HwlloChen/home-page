@@ -91,8 +91,8 @@ mdui-card {
 	&.bg::before {
 		content: '';
 		display: block;
-		width: 95%;
-		height: 70%;
+		width: 94%;
+		height: 75%;
 		position: absolute;
 		top: 0;
 		right: 0;
@@ -107,8 +107,8 @@ mdui-card {
 	}
 
 	&.bg[hover]::before {
-		height: 75%;
-		width: 97%;
+		width: 98%;
+		height: 80%;
 		opacity: 0.55;
 	}
 }
@@ -138,9 +138,11 @@ mdui-card {
 		span {
 			white-space: nowrap;
 			color: rgb(var(--mdui-color-outline));
+
 			@media(max-width: 600px) {
 				font-size: var(--mdui-typescale-body-small-size);
 			}
+
 			@media(min-width: 601px) {
 				font-size: var(--mdui-typescale-body-medium-size);
 			}
@@ -159,6 +161,24 @@ mdui-card {
 			margin-top: 0.2rem;
 			padding-inline-start: 0.15rem;
 			font-size: var(--mdui-typescale-body-medium-size);
+		}
+	}
+}
+
+.glass {
+	.actions {
+		background-color: rgba(var(--mdui-color-surface-container-highest), 0.55);
+	}
+
+	mdui-card {
+		&.bg::before {
+			width: 100%;
+			height: 100%;
+		}
+
+		&.bg[hover]::before {
+			width: 105%;
+			height: 105%;
 		}
 	}
 }
