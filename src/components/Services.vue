@@ -10,7 +10,7 @@ bg = "https://chenserver.top/dl/pic.png"
 	<template v-for="site in sites">
 		<section>
 			<mdui-card :href="site.url" :target="site.blank ? '_blank' : '_self'" variant="elevated" class="bg"
-				clickable :style="`--bg-url: url(${site.cover})`">
+				clickable :style="`--bg-url: url(${site.cover ? site.cover : ''})`">
 				<div class="info">
 					<div class="primary">
 						<div class="title">
