@@ -26,7 +26,7 @@ onMounted(() => {
 				<main id="content">
 					<Services />
 				</main>
-				<div id="side">
+				<div id="side" v-if="false">
 					<AboutMe />
 				</div>
 			</div>

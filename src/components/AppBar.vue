@@ -2,7 +2,7 @@
     <mdui-top-app-bar scroll-behavior="elevate" id="appbar">
         <div style="width: 5px;"></div>
         <mdui-top-app-bar-title>
-            {{ globalVars.siteName }}
+            <h1>{{ globalVars.siteName }}</h1>
             <span class="subtitle" id="mainsubtitle">{{ subtitleText }}</span>
         </mdui-top-app-bar-title>
         <div style="flex-grow: 1"></div>
@@ -174,5 +174,16 @@ mdui-button-icon {
 
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+h1 {
+	display: inline;
+	color: rgb(var(--mdui-color-on-surface));
+	font-size: var(--mdui-typescale-title-large-size);
+	font-weight: var(--mdui-typescale-title-large-weight);
+	letter-spacing: var(--mdui-typescale-title-large-tracking);
+	line-height: 2.5rem;
+    margin: 0;
+    padding: 0;
 }
 </style>
