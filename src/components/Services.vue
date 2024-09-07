@@ -1,6 +1,7 @@
 <script setup>
 import { globalVars } from '@/utils/globalVars';
 import { ref } from 'vue';
+import { hasV6 } from './IPv6Checker.vue';
 
 bg = "https://chenserver.top/dl/pic.png"
 
@@ -9,7 +10,8 @@ bg = "https://chenserver.top/dl/pic.png"
 <template>
 	<template v-for="site in sites">
 		<section>
-			<mdui-card variant="elevated" class="bg" :style="`--bg-url: url(${site.cover ? site.cover : ''})`">
+			<mdui-card variant="elevated" :class="site.cover ? 'bg' : 'text'"
+				:style="`--bg-url: url(${site.cover ? site.cover : ''}); --site-title: '${site.title}'`">
 				<div class="info">
 					<div class="primary">
 						<div class="title">
@@ -20,8 +22,9 @@ bg = "https://chenserver.top/dl/pic.png"
 						</div>
 					</div>
 					<div class="actions">
-						<mdui-button :href="site.url" :target="site.blank ? '_blank' : '_self'"
-							:end-icon="site.blank ? 'call_made' : ''" class="go-button">前往</mdui-button>
+						<mdui-button :="{ disabled: (site.v6 && !hasV6) }" :href="site.url"
+							:target="site.blank ? '_blank' : '_self'" :end-icon="site.blank ? 'call_made' : ''"
+							class="go-button">前往</mdui-button>
 						<mdui-divider></mdui-divider>
 						<span class="ubuntu-light">{{ site.url }}</span>
 					</div>
@@ -89,16 +92,42 @@ mdui-card {
 	height: 300px;
 	position: relative;
 
-	&.bg::before {
+	&::before {
 		content: '';
 		display: block;
-		width: 94%;
-		height: 80%;
 		position: absolute;
 		top: 0;
 		right: 0;
-		opacity: 0.7;
 		transition: all .3s var(--mdui-motion-easing-standard);
+	}
+
+	&:hover::before {
+		transition: all 15s cubic-bezier(0.03, 0.7, 0.1, 1),
+			color 5s var(--mdui-motion-easing-emphasized-accelerate);
+	}
+
+	&.text::before {
+		top: -4rem;
+		right: 0;
+		content: var(--site-title);
+		width: 70%;
+		color: rgba(var(--mdui-color-secondary-container), 0.45);
+		font-family: "Ubuntu", sans-serif;
+		font-weight: 700;
+		font-style: normal;
+		font-size: 14rem;
+		white-space: nowrap;
+	}
+
+	&.text:hover:before {
+		color: rgba(var(--mdui-color-secondary-container), 0.75);
+		width: 85%;
+	}
+
+	&.bg::before {
+		width: 94%;
+		height: 80%;
+		opacity: 0.7;
 		background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container-low), 0) 0%, rgba(var(--mdui-color-surface-container-low), 1) 100%),
 			linear-gradient(to left, rgba(var(--mdui-color-surface-container-low), 0.05) 0%, rgba(var(--mdui-color-surface-container-low), 1) 100%),
 			/* 针对亮色模式调整 */

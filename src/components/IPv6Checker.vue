@@ -30,7 +30,7 @@ const getIP = () => {
             info.value = `拥有IPv6地址`
             $('#ipchip').attr('icon', 'done')
             tip.value = `您拥有IPv6, 可以正常使用所有服务!  IPv6地址: ${response}`
-
+            hasV6.value = true;
         },
         error: function (xhr, status, e) {
             console.log(xhr, status, e)
@@ -42,26 +42,35 @@ const getIP = () => {
                         $('#ipchip').attr('icon', 'warning')
                         tip.value = "看来是ChenServer的IPv6部分出现了问题呢  您可以及时反馈问题给我们(hwllochen@qq.com)"
                         $('#ipchip').attr("href", "mailto:hwllochen@qq.com")
+                        hasV6.value = true;
                     } else {
+                        console.warn("noIPv6")
                         info.value = `无IPv6地址`
                         $('#ipchip').removeAttr('loading')
                         $('#ipchip').attr('icon', 'error')
                         tip.value = "您没有IPv6地址，这将意味着您无法使用ChenServer的大部分功能！  点击查看如何开启IPv6(前往ipw.cn)"
                         $('#ipchip').attr("href", "https://ipw.cn/doc/ipv6/user/enable_ipv6.html")
+                        hasV6.value = false;
                     }
                 })
                 .catch(error => {
+                    console.warn("noIPv6")
                     info.value = `无IPv6地址`
                     $('#ipchip').removeAttr('loading')
                     $('#ipchip').attr('icon', 'error')
                     tip.value = "您没有IPv6地址，这将意味着您无法使用ChenServer的大部分功能！  点击查看如何开启IPv6(前往ipw.cn)"
                     $('#ipchip').attr("href", "https://ipw.cn/doc/ipv6/user/enable_ipv6.html")
+                    hasV6.value = false;
                 });
         }
     })
 }
 
 onMounted(getIP)
+</script>
+
+<script>
+export const hasV6 = ref(true)
 </script>
 
 <style lang="less" scoped>
