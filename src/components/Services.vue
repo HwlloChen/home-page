@@ -9,8 +9,7 @@ bg = "https://chenserver.top/dl/pic.png"
 <template>
 	<template v-for="site in sites">
 		<section>
-			<mdui-card :href="site.url" :target="site.blank ? '_blank' : '_self'" variant="elevated" class="bg"
-				clickable :style="`--bg-url: url(${site.cover ? site.cover : ''})`">
+			<mdui-card variant="elevated" class="bg" :style="`--bg-url: url(${site.cover ? site.cover : ''})`">
 				<div class="info">
 					<div class="primary">
 						<div class="title">
@@ -21,7 +20,8 @@ bg = "https://chenserver.top/dl/pic.png"
 						</div>
 					</div>
 					<div class="actions">
-						<mdui-button :href="site.url" class="go-button">前往</mdui-button>
+						<mdui-button :href="site.url" :target="site.blank ? '_blank' : '_self'"
+							:end-icon="site.blank ? 'call_made' : ''" class="go-button">前往</mdui-button>
 						<mdui-divider></mdui-divider>
 						<span class="ubuntu-light">{{ site.url }}</span>
 					</div>
@@ -63,9 +63,10 @@ fetch(`${globalVars.backpoint}/sites`).then(response => response.json())
 </script>
 
 <style lang="less" scoped>
+/* 针对暗色模式调整 */
 .mdui-theme-dark mdui-card.bg::before {
-	background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container), 0.1) 0%, rgba(var(--mdui-color-surface-container), 1) 100%),
-		linear-gradient(to left, rgba(var(--mdui-color-surface-container), 0.1) 0%, rgba(var(--mdui-color-surface-container), 1) 100%),
+	background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container), 0.05) 0%, rgba(var(--mdui-color-surface-container), 1) 100%),
+		linear-gradient(to left, rgba(var(--mdui-color-surface-container), 0.05) 0%, rgba(var(--mdui-color-surface-container), 1) 100%),
 		var(--bg-url);
 	background-size: cover;
 	background-position: top right;
@@ -74,8 +75,8 @@ fetch(`${globalVars.backpoint}/sites`).then(response => response.json())
 
 .mdui-theme-auto mdui-card.bg::before {
 	@media (prefers-color-scheme: dark) {
-		background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container), 0.1) 0%, rgba(var(--mdui-color-surface-container), 1) 100%),
-			linear-gradient(to left, rgba(var(--mdui-color-surface-container), 0.1) 0%, rgba(var(--mdui-color-surface-container), 1) 100%),
+		background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container), 0.05) 0%, rgba(var(--mdui-color-surface-container), 1) 100%),
+			linear-gradient(to left, rgba(var(--mdui-color-surface-container), 0.05) 0%, rgba(var(--mdui-color-surface-container), 1) 100%),
 			var(--bg-url);
 		background-size: cover;
 		background-position: top right;
@@ -96,20 +97,43 @@ mdui-card {
 		position: absolute;
 		top: 0;
 		right: 0;
-		opacity: 0.35;
+		opacity: 0.7;
 		transition: all .3s var(--mdui-motion-easing-standard);
-		background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container-low), 0.1) 0%, rgba(var(--mdui-color-surface-container-low), 1) 100%),
-			linear-gradient(to left, rgba(var(--mdui-color-surface-container-low), 0.1) 0%, rgba(var(--mdui-color-surface-container-low), 1) 100%),
+		background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container-low), 0) 0%, rgba(var(--mdui-color-surface-container-low), 1) 100%),
+			linear-gradient(to left, rgba(var(--mdui-color-surface-container-low), 0.05) 0%, rgba(var(--mdui-color-surface-container-low), 1) 100%),
+			/* 针对亮色模式调整 */
 			var(--bg-url);
 		background-size: cover;
 		background-position: top right;
 		background-repeat: no-repeat;
 	}
 
-	&.bg[hover]::before {
+	&.bg:hover:before {
 		width: 98%;
 		height: 85%;
-		opacity: 0.55;
+		opacity: 0.8;
+	}
+
+	.mdui-theme-dark & {
+		&.bg:hover:before {
+			opacity: 0.6;
+		}
+
+		&.bg:before {
+			opacity: 0.5;
+		}
+	}
+
+	.mdui-theme-auto & {
+		@media (prefers-color-scheme: dark) {
+			&.bg:hover:before {
+				opacity: 0.6;
+			}
+
+			&.bg:before {
+				opacity: 0.5;
+			}
+		}
 	}
 }
 
@@ -126,7 +150,7 @@ mdui-card {
 		align-items: center;
 		height: 35px;
 		padding: 1rem;
-		background-color: rgba(var(--mdui-color-surface-container-highest), 0.7);
+		background-color: rgba(var(--mdui-color-surface-container-highest), 0.8);
 
 		mdui-divider {
 			width: 100%;
@@ -167,18 +191,29 @@ mdui-card {
 
 .glass {
 	.actions {
-		background-color: rgba(var(--mdui-color-surface-container-highest), 0.55);
+		background-color: rgba(var(--mdui-color-surface-container-highest), 0.5);
+		backdrop-filter: blur(5px);
 	}
 
 	mdui-card {
 		&.bg::before {
 			width: 100%;
 			height: 100%;
+
+			.mdui-theme-light & {
+				background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container-low), 0) 0%, rgba(var(--mdui-color-surface-container-low), 0.85) 100%),
+					linear-gradient(to left, rgba(var(--mdui-color-surface-container-low), 0.05) 0%, rgba(var(--mdui-color-surface-container-low), 0.85) 100%),
+					/* 针对亮色模式调整 */
+					var(--bg-url);
+				background-size: cover;
+				background-position: top right;
+				background-repeat: no-repeat;
+			}
 		}
 
-		&.bg[hover]::before {
-			width: 105%;
-			height: 105%;
+		&.bg:hover:before {
+			width: 103%;
+			height: 103%;
 		}
 	}
 }

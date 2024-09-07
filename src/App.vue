@@ -52,6 +52,8 @@ onMounted(() => {
 	max-width: @max-main-width;
 	box-sizing: border-box;
 
+	transition: all .3s;
+
 	#content,
 	#side {
 		box-sizing: border-box;

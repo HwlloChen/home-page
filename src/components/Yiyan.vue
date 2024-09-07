@@ -27,7 +27,7 @@ onMounted(() => {
                         const yiyan_from = document.getElementById("yiyan-from")
                         if ((typeof hitokoto.who) === "string" && hitokoto.who.length >= 1) {
                             YIYAN_FROM.value = `——— ${hitokoto.who}`
-                        }else{
+                        } else {
                             YIYAN_FROM.value = `出自《${hitokoto.from}》`
                         }
                         yiyan_from.style.opacity = "1"
@@ -91,9 +91,8 @@ var hitokoto = undefined
     float: right;
     opacity: 0;
     /* 初始状态为透明 */
-    transition: opacity 1.5s var(--mdui-motion-easing-standard);
+    transition: font-size .3s var(--mdui-motion-easing-standard), opacity 1.5s var(--mdui-motion-easing-standard);
     /* 设置过渡效果 */
-    transition: font-size .3s var(--mdui-motion-easing-standard);
 }
 
 .yiyan-box {
