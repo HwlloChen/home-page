@@ -91,6 +91,11 @@ mdui-card {
 	width: 100%;
 	height: 300px;
 	position: relative;
+	transition: box-shadow .3s;
+	box-shadow: var(--mdui-elevation-level1);
+	&:hover {
+		box-shadow: var(--mdui-elevation-level4);
+	}
 
 	&::before {
 		content: '';
@@ -101,7 +106,7 @@ mdui-card {
 		transition: all .3s var(--mdui-motion-easing-standard);
 	}
 
-	&:hover::before {
+	&.text:hover::before {
 		transition: all 15s cubic-bezier(0.03, 0.7, 0.1, 1),
 			color 5s var(--mdui-motion-easing-emphasized-accelerate);
 	}
