@@ -7,7 +7,8 @@
         </mdui-top-app-bar-title>
         <div style="flex-grow: 1"></div>
         <IPv6Checker />
-        <Music v-if="hasV6" />
+        <mdui-button-icon icon="queue_music" :="{ disabled: !available, loading: loading }"
+        @click="opendrawer" v-if="hasV6"></mdui-button-icon>
         <mdui-tooltip :content="tip">
             <mdui-button-icon :icon="brightness_icon" @click="changeTheme"></mdui-button-icon>
         </mdui-tooltip>
@@ -23,7 +24,7 @@
 
 <script setup>
 import IPv6Checker, { hasV6 } from './IPv6Checker.vue';
-import Music from './Music.vue';
+import { available, loading, opendrawer } from './Music.vue';
 import { confirm, setTheme } from 'mdui';
 import { onMounted, ref } from 'vue';
 import { openDialog } from './Theme.vue';

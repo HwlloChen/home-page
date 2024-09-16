@@ -41,13 +41,14 @@ import Pickr from '@simonwep/pickr';
 import { globalVars } from '@/utils/globalVars';
 
 onMounted(() => {
+    html = document.querySelector("html")
     const useImageChkBox = document.getElementById("useImage")
     if (globalVars.theme.bgImage !== false) {
         console.log("byd")
         imgElement.src = globalVars.theme.bgImage
         const imageDiv = document.getElementById('color-wallpaper-div')
         imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
-        document.body.style.backgroundImage = `url('${imgElement.src}')`
+        html.style.backgroundImage = `url('${imgElement.src}')`
         setTimeout(() => {
             // 添加延时防止操作失败
             useImageChkBox.setAttribute("checked", true)
@@ -184,6 +185,7 @@ onMounted(() => {
 const color = ref(globalVars.theme.color)
 setColorScheme(color.value);
 const imgElement = new Image();
+var html
 
 /**
  * 保存主题
@@ -197,7 +199,7 @@ const saveTheme = () => {
         try {
             globalVars.theme.bgImage = imgElement.src
             localStorage.setItem("theme", JSON.stringify(globalVars.theme))
-            document.body.style.backgroundImage = `url('${imgElement.src}')`
+            html.style.backgroundImage = `url('${imgElement.src}')`
         } catch (e) {
             snackbar({ message: "图片保存失败！请考虑手动压缩图片(图片大小 <= 5MB)后再试。", autoCloseDelay: 3000 })
             console.warn(e)
@@ -205,7 +207,7 @@ const saveTheme = () => {
         }
     } else {
         globalVars.theme.bgImage = false
-        document.body.style.backgroundImage = 'none';
+        html.style.backgroundImage = 'none';
     }
 
     globalVars.theme.color = color.value
@@ -222,7 +224,7 @@ const saveTheme = () => {
 export const openDialog = () => {
     const dialog = document.getElementById("colorDialog")
     dialog.open = true;
-    const dialogObserver = observeResize(document.body, function (entry, observer) {
+    const dialogObserver = observeResize(html, function (entry, observer) {
         dialog.fullscreen = (entry.borderBoxSize[0].inlineSize <= 584)
     })
     dialog.addEventListener("close", () => { dialogObserver.unobserve(); })

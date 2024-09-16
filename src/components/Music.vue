@@ -1,6 +1,4 @@
 <template>
-    <mdui-button-icon icon="queue_music" :="{ disabled: !available, loading: loading }"
-        @click="opendrawer"></mdui-button-icon>
     <mdui-navigation-drawer id="music-drawer" placement="right" modal close-on-esc close-on-overlay-click>
         <div class="playing-music">
             <div class="playing-music-cover-div">
@@ -13,11 +11,14 @@
                     :title="`${player.playingMusic.value.title} - ${player.playingMusic.value.information}`"></audio>
                 <div class="slider ubuntu-light">
                     {{ player.playingMusic.value.nowTimeString }}
-                    <mdui-slider id="music-slider" v-on:change="player.changeNowTime($event.target.value)" :value="player.playingMusic.value.nowTime" :max="player.playingMusic.value.maxTime"></mdui-slider>
+                    <mdui-slider id="music-slider" @change="player.changeNowTime($event.target.value)"
+                        :value="player.playingMusic.value.nowTime"
+                        :max="player.playingMusic.value.maxTime"></mdui-slider>
                     {{ player.playingMusic.value.maxTimeString }}
                 </div>
                 <div class="action-buttons">
-                    <mdui-button-icon variant="tonal" icon="skip_previous" @click="player.prevTrack()"></mdui-button-icon>
+                    <mdui-button-icon variant="tonal" icon="skip_previous"
+                        @click="player.prevTrack()"></mdui-button-icon>
                     <mdui-button-icon variant="tonal" @click="player.negative()"
                         :icon="player.playingMusic.value.pause ? 'play_arrow' : 'pause'"></mdui-button-icon>
                     <mdui-button-icon variant="tonal" icon="skip_next" @click="player.nextTrack()"></mdui-button-icon>
@@ -39,7 +40,9 @@
                 </mdui-list-item>
             </template>
         </mdui-list>
-        <div class="ubuntu-light" style="text-align: right!important; font-size: .9rem; padding-top: .5rem; line-height: 1.25;">Powered by <a :href="globalVars.navidrome.server">ChenServer Musics</a></div>
+        <div class="ubuntu-light"
+            style="text-align: right!important; font-size: .9rem; padding-top: .5rem; line-height: 1.25;">
+            Powered by <a :href="globalVars.navidrome.server">ChenServer Musics</a></div>
     </mdui-navigation-drawer>
 </template>
 
@@ -48,9 +51,6 @@ import { globalVars } from '@/utils/globalVars';
 import { MusicPlayer } from '@/utils/musicPlayer';
 import { snackbar } from 'mdui';
 import { onBeforeMount, onMounted, ref } from 'vue';
-
-var drawer
-const player = new MusicPlayer("audioElement")
 
 onBeforeMount(() => {
     /**
@@ -103,29 +103,19 @@ const setMusic = (index) => {
     player.loadTrack(index)
     player.play()
 }
-
-var firstflag = true
-const opendrawer = () => {
-    drawer.open = !drawer.open
-    if(firstflag) {
-        setTimeout(() => {
-            // 平滑滚动到指定元素
-            const targets = document.querySelector(".music-list").children;
-            targets[player.playingMusic.value.index].scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 200);
-        firstflag = false
-    }
-} 
 </script>
 
 <script>
-const available = ref(true)
+var drawer
+export const available = ref(true)
+const player = new MusicPlayer()
 const headers = {
     "x-nd-authorization": null,
     "x-nd-client-unique-id": null
 }
 const music_list = ref([])
-const loading = ref(true)
+export const loading = ref(true)
+var firstflag = true
 
 function updateToken() {
     return new Promise(function (resolve, reject) {
@@ -203,15 +193,32 @@ function getMusicList() {
         })
     })
 }
+
+export const opendrawer = () => {
+    drawer.open = !drawer.open
+    if (firstflag) {
+        setTimeout(() => {
+            // 平滑滚动到指定元素
+            const targets = document.querySelector(".music-list").children;
+            targets[player.playingMusic.value.index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+        firstflag = false
+    }
+} 
 </script>
 
 <style lang="less" scoped>
-#music-drawer::part(panel) {
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    padding: 1rem 0.7rem 1rem 1rem;
-    width: 24rem;
+#music-drawer {
+    &::part(panel) {
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        padding: 1rem 0.7rem 1rem 1rem;
+        width: 24rem;
+    }
+
+    margin-right: 0 !important;
+    position: fixed;
 }
 
 .playing-music {
@@ -296,6 +303,21 @@ function getMusicList() {
             width: 3rem;
             height: 3rem;
         }
+    }
+}
+
+.glass {
+    #music-drawer::part(panel) {
+        background-color: rgba(var(--mdui-color-surface-container-low), 0.25);
+        backdrop-filter: blur(8.5px);
+    }
+
+    mdui-list-item[active] {
+        background-color: rgba(var(--mdui-color-secondary-container), 0.8);
+    }
+
+    mdui-button-icon[variant="tonal"] {
+        background-color: rgba(var(--mdui-color-secondary-container), 0.8);
     }
 }
 </style>
