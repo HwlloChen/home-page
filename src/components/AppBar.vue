@@ -2,11 +2,12 @@
     <mdui-top-app-bar scroll-behavior="elevate" id="appbar">
         <div style="width: 5px;"></div>
         <mdui-top-app-bar-title>
-            <h1>{{ globalVars.siteName }}</h1>
+            {{ globalVars.siteName }}
             <span class="subtitle" id="mainsubtitle">{{ subtitleText }}</span>
         </mdui-top-app-bar-title>
         <div style="flex-grow: 1"></div>
         <IPv6Checker />
+        <Music v-if="hasV6" />
         <mdui-tooltip :content="tip">
             <mdui-button-icon :icon="brightness_icon" @click="changeTheme"></mdui-button-icon>
         </mdui-tooltip>
@@ -21,7 +22,8 @@
 </template>
 
 <script setup>
-import IPv6Checker from './IPv6Checker.vue';
+import IPv6Checker, { hasV6 } from './IPv6Checker.vue';
+import Music from './Music.vue';
 import { confirm, setTheme } from 'mdui';
 import { onMounted, ref } from 'vue';
 import { openDialog } from './Theme.vue';
@@ -174,16 +176,5 @@ mdui-button-icon {
 
     white-space: nowrap;
     text-overflow: ellipsis;
-}
-
-h1 {
-	display: inline;
-	color: rgb(var(--mdui-color-on-surface));
-	font-size: var(--mdui-typescale-title-large-size);
-	font-weight: var(--mdui-typescale-title-large-weight);
-	letter-spacing: var(--mdui-typescale-title-large-tracking);
-	line-height: 2.5rem;
-    margin: 0;
-    padding: 0;
 }
 </style>

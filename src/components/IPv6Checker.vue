@@ -70,7 +70,7 @@ onMounted(getIP)
 </script>
 
 <script>
-export const hasV6 = ref(true)
+export const hasV6 = ref(false)
 </script>
 
 <style lang="less" scoped>

@@ -7,26 +7,26 @@
             <mdui-button variant="elevated" @click="saveTheme">保存</mdui-button>
         </mdui-top-app-bar>
         <div class="main">
-            <p>
+            <div class="theme-box">
                 <span>颜色主题</span>
                 <br />
                 <mdui-button style="margin-top: .8rem;" id="color-picker" variant="tonal">打开颜色选择器</mdui-button>
-            <p style="margin-top: 8px;">
-                已选择的颜色: <span id="colorShow">{{ color }}</span>
-            </p>
-            <mdui-button style="margin-top: .8rem;" id="color-from-image" variant="tonal">从图片中提取颜色</mdui-button>
-            <br />
-            <mdui-checkbox id="useGlass" :="{ checked: useGlass }">亚克力材质</mdui-checkbox>
-            </p>
-            <mdui-divider vertical></mdui-divider>
-            <p>
-                <span>壁纸设置</span>
-            <div class="color-wallpaper" id="color-wallpaper-div">
-                请选择一张壁纸
-                <input id="color_imageInput" type="file" accept="image/png, image/jpeg">
+                <p style="margin-top: 8px;">
+                    已选择的颜色: <span id="colorShow">{{ color }}</span>
+                </p>
+                <mdui-button style="margin-top: .8rem;" id="color-from-image" variant="tonal">从图片中提取颜色</mdui-button>
+                <br />
+                <mdui-checkbox id="useGlass" :="{ checked: useGlass }">亚克力材质</mdui-checkbox>
             </div>
-            <mdui-checkbox id="useImage" disabled>使用该图片作为背景</mdui-checkbox>
-            </p>
+            <mdui-divider vertical></mdui-divider>
+            <div class="theme-box">
+                <span>壁纸设置</span>
+                <div class="color-wallpaper" id="color-wallpaper-div">
+                    请选择一张壁纸
+                    <input id="color_imageInput" type="file" accept="image/png, image/jpeg">
+                </div>
+                <mdui-checkbox id="useImage" disabled>使用该图片作为背景</mdui-checkbox>
+            </div>
         </div>
     </mdui-dialog>
 </template>
@@ -244,7 +244,7 @@ export const useGlass = ref(globalVars.theme.useGlass !== false)
     overflow-x: hidden;
 }
 
-p {
+.theme-box {
     width: 100%;
     margin: 0 1rem;
 }

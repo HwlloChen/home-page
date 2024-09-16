@@ -6,6 +6,7 @@ import Yiyan from './components/Yiyan.vue';
 import Services from './components/Services.vue';
 import AboutMe from './components/AboutMe.vue';
 import { onMounted, watch } from 'vue';
+import { globalVars } from './utils/globalVars';
 
 onMounted(() => {
 	//绑定glass类到body
@@ -18,6 +19,7 @@ onMounted(() => {
 </script>
 
 <template>
+	<h1 style="display: none;">{{ globalVars.siteName }}</h1>
 	<mdui-layout>
 		<AppBar />
 		<mdui-layout-main>

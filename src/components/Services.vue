@@ -132,7 +132,7 @@ mdui-card {
 	&.bg::before {
 		width: 94%;
 		height: 80%;
-		opacity: 0.7;
+		opacity: 0.75;
 		background: linear-gradient(to bottom, rgba(var(--mdui-color-surface-container-low), 0) 0%, rgba(var(--mdui-color-surface-container-low), 1) 100%),
 			linear-gradient(to left, rgba(var(--mdui-color-surface-container-low), 0.05) 0%, rgba(var(--mdui-color-surface-container-low), 1) 100%),
 			/* 针对亮色模式调整 */
