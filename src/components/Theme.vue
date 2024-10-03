@@ -301,7 +301,7 @@ mdui-divider {
 
 @media (min-width: 701px) {
     .main {
-        max-width: 512px;
+        max-width: 510px;
         width: 65vw;
         justify-content: space-between;
         flex-direction: row;

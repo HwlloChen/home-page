@@ -17,11 +17,19 @@
                     {{ player.playingMusic.value.maxTimeString }}
                 </div>
                 <div class="action-buttons">
+                    <mdui-tooltip :content="player.playbackMode.value === 0 ? '列表循环' : (player.playbackMode.value === -1 ? '单曲循环' : '随机播放')">
+                        <mdui-button-icon variant="standard"
+                            :icon="player.playbackMode.value === 0 ? 'repeat--outlined' : (player.playbackMode.value === -1 ? 'repeat_one--outlined' : 'shuffle--outlined')"
+                            style="width: 2.5rem; height: 2.5rem;"
+                            @click="player.changePlayBackMode()"></mdui-button-icon>
+                    </mdui-tooltip>
                     <mdui-button-icon variant="tonal" icon="skip_previous"
                         @click="player.prevTrack()"></mdui-button-icon>
                     <mdui-button-icon variant="tonal" @click="player.negative()"
                         :icon="player.playingMusic.value.pause ? 'play_arrow' : 'pause'"></mdui-button-icon>
                     <mdui-button-icon variant="tonal" icon="skip_next" @click="player.nextTrack()"></mdui-button-icon>
+                    <mdui-button-icon variant="standard" icon="share--outlined" style="width: 2.5rem; height: 2.5rem;"
+                        @click="snackbar({message: '敬请期待'})"></mdui-button-icon>
                 </div>
             </div>
         </div>
@@ -32,7 +40,7 @@
                     {{ music.title }}
                     <mdui-avatar slot="icon">
                         <img class="lazy"
-                            :src="`${globalVars.navidrome.server}/rest/getCoverArt?u=${globalVars.navidrome.user}&t=${globalVars.navidrome.login.subsonicToken}&s=${globalVars.navidrome.login.subsonicSalt}&f=json&v=1.8.0&c=${globalVars.navidrome.clientName}&id=al-${music.albumId}&size=64`"
+                            :src="`${globalVars.navidrome.server}/rest/getCoverArt?u=${globalVars.navidrome.user}&t=${globalVars.navidrome.login.subsonicToken}&s=${globalVars.navidrome.login.subsonicSalt}&f=json&v=1.8.0&c=${globalVars.navidrome.clientName}&id=al-${music.albumId}&size=128`"
                             loading="lazy" />
                     </mdui-avatar>
                     <mdui-button-icon slot="end-icon" @click="setMusic(index)"
@@ -305,6 +313,7 @@ export const opendrawer = () => {
     .action-buttons {
         display: flex;
         justify-content: center;
+        align-items: center;
 
         mdui-button-icon {
             margin-left: 5px;

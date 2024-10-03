@@ -20,13 +20,15 @@ class MusicPlayer {
     // 加载播放列表
     loadPlaylist(songs) {
         this.playlist = songs;
-        // 尝试恢复原有进度
-        if(localStorage.getItem("lastmusic") != null) {
+        // 尝试恢复原有状态
+        if (localStorage.getItem("lastmusic") != null) {
             const storage = JSON.parse(localStorage.getItem("lastmusic"))
+            this.playbackMode.value = storage.playbackMode
+            this.lastTracks = storage.lastTracks
             var flag = false
             // 查找歌曲是否仍然存在
             for (const [index, music] of this.playlist.entries()) {
-                if(music.id === storage.id) {
+                if (music.id === storage.id) {
                     flag = true
                     this.loadTrack(index)
                     this.changeNowTime(storage.time)
@@ -34,7 +36,7 @@ class MusicPlayer {
                     break;
                 }
             }
-            if(!flag) this.loadTrack(0)
+            if (!flag) this.loadTrack(0)
         }
         else this.loadTrack(0);
     }
@@ -56,6 +58,8 @@ class MusicPlayer {
         localStorage.setItem("lastmusic", JSON.stringify({
             id: this.track.id,
             time: nowTime,
+            playbackMode: this.playbackMode.value,
+            lastTracks: this.lastTracks,
         }))
     }
     changeNowTime(nowTime) {
@@ -122,17 +126,58 @@ class MusicPlayer {
     }
 
     nextTrack() {
-        if (this.currentTrackIndex < this.playlist.length - 1) {
-            this.loadTrack(this.currentTrackIndex + 1);
-            this.play();
+        switch (this.playbackMode.value) {
+            case 0:
+                if (this.currentTrackIndex < this.playlist.length - 1) {
+                    this.loadTrack(this.currentTrackIndex + 1); // 取下一首
+                }
+                break;
+
+            case 1:
+                if (this.lastTracks.length > 128) this.lastTracks.shift()
+                this.lastTracks.push(this.currentTrackIndex)
+                const randomTrack = Math.floor(Math.random() * (this.playlist.length)) // 取一个0～max-1之间的随机整数
+                this.loadTrack(randomTrack)
+                break;
+
+            case -1:
+                this.loadTrack(this.currentTrackIndex); // 取本首
+                break;
+
+            default:
+                if (this.currentTrackIndex < this.playlist.length - 1) {
+                    this.loadTrack(this.currentTrackIndex + 1);
+                }
+                break;
         }
+        this.play();
     }
 
     prevTrack() {
-        if (this.currentTrackIndex > 0) {
-            this.loadTrack(this.currentTrackIndex - 1);
-            this.play();
+        switch (this.playbackMode.value) {
+            case 0:
+                if (this.currentTrackIndex > 0) {
+                    this.loadTrack(this.currentTrackIndex - 1); // 取上一首
+                }
+                break;
+
+            case 1:
+                const lastTrack = this.lastTracks.pop()
+                if (lastTrack === undefined) { this.nextTrack(); return; }
+                else this.loadTrack(lastTrack)
+                break;
+
+            case -1:
+                this.loadTrack(this.currentTrackIndex); // 取本首
+                break;
+
+            default:
+                if (this.currentTrackIndex > 0) {
+                    this.loadTrack(this.currentTrackIndex - 1);
+                }
+                break;
         }
+        this.play();
     }
 
     updateMediaSession(track) {
@@ -151,6 +196,24 @@ class MusicPlayer {
         }
     }
 
+    lastTracks = [] // 使用一个栈记录上一曲信息，仅适用于随机播放，最大长度128
+
+    changePlayBackMode() {
+        if (this.playbackMode.value === 1) {
+            this.playbackMode.value = -1
+            this.lastTracks = [] // 不再是随机播放，清空上一曲信息
+        }
+        else this.playbackMode.value += 1
+
+        const storage = JSON.parse(localStorage.getItem("lastmusic"))
+        localStorage.setItem("lastmusic", JSON.stringify({
+            id: storage.id,
+            time: storage.time,
+            playbackMode: this.playbackMode.value,
+            lastTracks: this.lastTracks,
+        }))
+    }
+
     playingMusic = ref({
         title: "ChenServer Music",
         information: "Enjoy Music.",
@@ -162,6 +225,8 @@ class MusicPlayer {
         maxTimeString: "0:00",
         pause: true,
     })
+
+    playbackMode = ref(0) // 0: 顺序播放, 1: 随机播放, -1: 单曲循环
 }
 
 export { MusicPlayer }
