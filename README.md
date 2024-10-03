@@ -1,6 +1,6 @@
 # HomePage
 
-Hi there!
+Hi there!👋
 
 #### 介绍
 ChenServer的新主页，目前处于项目初期。

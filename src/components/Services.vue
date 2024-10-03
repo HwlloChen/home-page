@@ -185,6 +185,7 @@ mdui-card {
 		height: 35px;
 		padding: 1rem;
 		background-color: rgba(var(--mdui-color-surface-container-highest), 0.8);
+		
 
 		mdui-divider {
 			width: 100%;
@@ -227,6 +228,9 @@ mdui-card {
 	.actions {
 		background-color: rgba(var(--mdui-color-surface-container-highest), 0.5);
 		backdrop-filter: blur(5px);
+
+		border: 0!important;
+		border-top: 1px solid rgba(255, 255, 255, 0.05)!important;
 	}
 
 	mdui-card {

@@ -1,5 +1,5 @@
 <template>
-    <mdui-top-app-bar scroll-behavior="elevate" id="appbar">
+    <mdui-top-app-bar scroll-behavior="elevate" id="appbar" class="glass-border">
         <div style="width: 5px;"></div>
         <mdui-top-app-bar-title>
             {{ globalVars.siteName }}
@@ -8,7 +8,8 @@
         <div style="flex-grow: 1"></div>
         <IPv6Checker />
         <mdui-button-icon icon="queue_music" :="{ disabled: !available, loading: loading }"
-        @click="opendrawer" v-if="hasV6"></mdui-button-icon>
+            :style="player.playingMusic.value.pause ? '' : 'color: rgb(var(--mdui-color-primary))'" @click="opendrawer"
+            v-if="hasV6"></mdui-button-icon>
         <mdui-tooltip :content="tip">
             <mdui-button-icon :icon="brightness_icon" @click="changeTheme"></mdui-button-icon>
         </mdui-tooltip>
@@ -24,7 +25,7 @@
 
 <script setup>
 import IPv6Checker, { hasV6 } from './IPv6Checker.vue';
-import { available, loading, opendrawer } from './Music.vue';
+import { available, loading, opendrawer, player } from './Music.vue';
 import { confirm, setTheme } from 'mdui';
 import { onMounted, ref } from 'vue';
 import { openDialog } from './Theme.vue';
@@ -132,16 +133,20 @@ mdui-top-app-bar {
 }
 
 .glass {
+    border: 0 !important;
+
     mdui-top-app-bar {
         background-color: rgba(var(--mdui-color-surface-container), 0.8);
         backdrop-filter: blur(7.5px);
         -webkit-backdrop-filter: blur(7.5px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     mdui-top-app-bar[scrolling] {
         background-color: rgba(var(--mdui-color-surface-container), 0.35);
         backdrop-filter: blur(7px);
         -webkit-backdrop-filter: blur(7px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     }
 }
 

@@ -40,8 +40,7 @@
                 </mdui-list-item>
             </template>
         </mdui-list>
-        <div class="ubuntu-light"
-            style="text-align: right!important; font-size: .9rem; padding-top: .5rem; line-height: 1.25;">
+        <div class="ubuntu-light music-about">
             Powered by <a :href="globalVars.navidrome.server">ChenServer Musics</a></div>
     </mdui-navigation-drawer>
 </template>
@@ -86,13 +85,16 @@ onBeforeMount(() => {
     available.value = true
 })
 
-let imageObserver
-
 onMounted(() => {
     drawer = document.getElementById("music-drawer")
     const audio = document.getElementById("audioElement")
     loading.value = false
     console.log(available.value)
+
+    // 修改进度条提示函数
+    const slider = document.getElementById("music-slider")
+    slider.labelFormatter = (value) => player.formatTime(value);
+
     if (!available.value) {
         return
     }
@@ -108,7 +110,7 @@ const setMusic = (index) => {
 <script>
 var drawer
 export const available = ref(true)
-const player = new MusicPlayer()
+export const player = new MusicPlayer()
 const headers = {
     "x-nd-authorization": null,
     "x-nd-client-unique-id": null
@@ -178,7 +180,7 @@ function keepAlive() {
 function getMusicList() {
     return new Promise(function (resolve, reject) {
         // 获取音乐列表
-        fetch(`${globalVars.navidrome.server}/api/song?_order=DESC&_sort=createdAt`, {
+        fetch(`${globalVars.navidrome.server}${globalVars.navidrome.playListURL}`, {
             method: "GET",
             headers: headers
         }).then(response => {
@@ -213,7 +215,15 @@ export const opendrawer = () => {
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        padding: 1rem 0.7rem 1rem 1rem;
+
+        @media(min-width: 601px) {
+            padding: 1rem 0.7rem 1rem 1rem;
+        }
+
+        @media(max-width: 600px) {
+            padding: 0.6rem 0.3rem 0.6rem 0.6rem;
+        }
+
         width: 24rem;
     }
 
@@ -303,6 +313,23 @@ export const opendrawer = () => {
             width: 3rem;
             height: 3rem;
         }
+    }
+}
+
+.music-about {
+    text-align: right !important;
+    margin-bottom: -0.45rem;
+
+    @media(min-width: 601px) {
+        font-size: .9rem;
+        padding-top: .5rem;
+        line-height: 1.25;
+    }
+
+    @media(max-width: 600px) {
+        font-size: .85rem;
+        padding-top: .3rem;
+        line-height: 1;
     }
 }
 
