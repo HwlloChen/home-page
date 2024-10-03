@@ -9,7 +9,7 @@ ChenServer的新主页，目前处于项目初期。
 
 ~~代码比较屎~~（我也是边做边学）
 
-[Demo Page(https://chenserver.top/new)](https://chenserver.top/new)
+[Demo Page(https://chenserver.top)](https://chenserver.top)
 
 以GPLv3协议开源。
 
