@@ -20,15 +20,15 @@ class MusicPlayer {
     // 加载播放列表
     loadPlaylist(songs) {
         this.playlist = songs;
+        for (var i = 0; i < this.playlist.length; i++) this.playlist[i].realId = "mediaFileId" in this.playlist[i] ? this.playlist[i].mediaFileId : this.playlist[i].id // 规避不同歌单返回id不同问题
         // 尝试恢复原有状态
         if (localStorage.getItem("lastmusic") != null) {
             const storage = JSON.parse(localStorage.getItem("lastmusic"))
-            this.playbackMode.value = storage.playbackMode
-            this.lastTracks = storage.lastTracks
             var flag = false
+            this.playbackMode.value = storage.playbackMode
             // 查找歌曲是否仍然存在
             for (const [index, music] of this.playlist.entries()) {
-                if (music.id === storage.id) {
+                if (music.realId === storage.id) {
                     flag = true
                     this.loadTrack(index)
                     this.changeNowTime(storage.time)
@@ -37,6 +37,7 @@ class MusicPlayer {
                 }
             }
             if (!flag) this.loadTrack(0)
+            else this.lastTracks = storage.lastTracks
         }
         else this.loadTrack(0);
     }
@@ -56,7 +57,7 @@ class MusicPlayer {
 
         // 更新播放进度
         localStorage.setItem("lastmusic", JSON.stringify({
-            id: this.track.id,
+            id: this.track.realId,
             time: nowTime,
             playbackMode: this.playbackMode.value,
             lastTracks: this.lastTracks,
@@ -89,7 +90,7 @@ class MusicPlayer {
         this.playingMusic.value.index = index
 
         // 获取音频流的 URL
-        const streamUrl = await this.getSubsonicStreamUrl(this.track.id);
+        const streamUrl = await this.getSubsonicStreamUrl(this.track.realId);
         this.audio.src = streamUrl;
         this.audio.load();
 

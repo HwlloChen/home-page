@@ -17,7 +17,8 @@
                     {{ player.playingMusic.value.maxTimeString }}
                 </div>
                 <div class="action-buttons">
-                    <mdui-tooltip :content="player.playbackMode.value === 0 ? '列表循环' : (player.playbackMode.value === -1 ? '单曲循环' : '随机播放')">
+                    <mdui-tooltip
+                        :content="player.playbackMode.value === 0 ? '列表循环' : (player.playbackMode.value === -1 ? '单曲循环' : '随机播放')">
                         <mdui-button-icon variant="standard"
                             :icon="player.playbackMode.value === 0 ? 'repeat--outlined' : (player.playbackMode.value === -1 ? 'repeat_one--outlined' : 'shuffle--outlined')"
                             style="width: 2.5rem; height: 2.5rem;"
@@ -29,7 +30,7 @@
                         :icon="player.playingMusic.value.pause ? 'play_arrow' : 'pause'"></mdui-button-icon>
                     <mdui-button-icon variant="tonal" icon="skip_next" @click="player.nextTrack()"></mdui-button-icon>
                     <mdui-button-icon variant="standard" icon="share--outlined" style="width: 2.5rem; height: 2.5rem;"
-                        @click="snackbar({message: '敬请期待'})"></mdui-button-icon>
+                        @click="snackbar({ message: '敬请期待' })"></mdui-button-icon>
                 </div>
             </div>
         </div>
@@ -40,10 +41,11 @@
                     {{ music.title }}
                     <mdui-avatar slot="icon">
                         <img class="lazy"
-                            :src="`${globalVars.navidrome.server}/rest/getCoverArt?u=${globalVars.navidrome.user}&t=${globalVars.navidrome.login.subsonicToken}&s=${globalVars.navidrome.login.subsonicSalt}&f=json&v=1.8.0&c=${globalVars.navidrome.clientName}&id=al-${music.albumId}&size=128`"
+                            :src="`${globalVars.navidrome.server}/rest/getCoverArt?u=${globalVars.navidrome.user}&t=${globalVars.navidrome.login.subsonicToken}&s=${globalVars.navidrome.login.subsonicSalt}&f=json&v=1.8.0&c=${globalVars.navidrome.clientName}&id=al-${music.albumId}&size=96`"
                             loading="lazy" />
                     </mdui-avatar>
                     <mdui-button-icon slot="end-icon" @click="setMusic(index)"
+                        :class="{ 'imgRotate disabled': (player.playingMusic.value.index === index), 'imgRotate-pause': player.playingMusic.value.pause, }"
                         :icon="(player.playingMusic.value.index === index) ? 'music_note' : 'play_circle'"></mdui-button-icon>
                 </mdui-list-item>
             </template>
@@ -239,6 +241,11 @@ export const opendrawer = () => {
     position: fixed;
 }
 
+.lazy {
+    width: 105%;
+    height: 105%;
+}
+
 .playing-music {
     display: flex;
     align-items: center;
@@ -280,6 +287,8 @@ export const opendrawer = () => {
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
+    border-radius: var(--mdui-shape-corner-extra-large);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .actions {
@@ -340,6 +349,12 @@ export const opendrawer = () => {
         padding-top: .3rem;
         line-height: 1;
     }
+}
+
+mdui-button-icon.disabled {
+    /* 不可点击状态 */
+    cursor: default;
+    pointer-events: none;
 }
 
 .glass {

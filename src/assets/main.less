@@ -113,3 +113,20 @@ a {
 		transform: scaleX(1);
 	}
 }
+
+@keyframes imgRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+.imgRotate {
+	animation: imgRotate 30s linear infinite;
+}
+
+.imgRotate-pause {
+	animation-play-state: paused!important;
+}
