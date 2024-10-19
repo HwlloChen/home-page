@@ -11,6 +11,8 @@ ChenServer的新主页，目前处于项目初期。
 
 以GPLv3协议开源。
 
+支持连接Navidrome个人音乐服务器。
+
 #### 初始化
 
 ```bash
