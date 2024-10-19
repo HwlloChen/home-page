@@ -5,6 +5,8 @@ Hi there!👋
 #### 介绍
 ChenServer的新主页，目前处于项目初期。
 
+<span style='color: yellow;'>[WARN]</span>由于种种原因，Github上的更新可能不及时，请关注[Gitee](https://github.com/HwlloChen/home-page)
+
 使用 [Vuejs](https://vuejs.org) 和 [mdui](https://mdui.org)
 
 [Demo Page(https://chenserver.top)](https://chenserver.top)
