@@ -26,25 +26,26 @@
                     <input id="color_imageInput" type="file" accept="image/png, image/jpeg">
                 </div>
                 <mdui-checkbox id="useImage" disabled>使用该图片作为背景</mdui-checkbox>
+                <mdui-button @click="useImgURL" variant="text">or 使用网络图片</mdui-button>
             </div>
         </div>
     </mdui-dialog>
 </template>
 
 <script setup>
-import { getColorFromImage, observeResize, setColorScheme, snackbar } from 'mdui';
+import { getColorFromImage, observeResize, prompt, setColorScheme, snackbar } from 'mdui';
 import { onMounted, ref } from 'vue';
 import Compressor from 'compressorjs';
 
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import Pickr from '@simonwep/pickr';
 import { globalVars } from '@/utils/globalVars';
+import { changeTheme } from './AppBar.vue';
 
 onMounted(() => {
     html = document.querySelector("html")
     const useImageChkBox = document.getElementById("useImage")
     if (globalVars.theme.bgImage !== false) {
-        console.log("byd")
         imgElement.src = globalVars.theme.bgImage
         const imageDiv = document.getElementById('color-wallpaper-div')
         imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
@@ -188,6 +189,53 @@ const imgElement = new Image();
 var html
 
 /**
+ * 判断图片明暗程度，返回一个0~1的数值
+ * @param img HTMLImageElement对象
+ */
+function calculateImageDarkness(img) {
+    return new Promise((resolve, reject) => {
+        // 创建一个 canvas 元素
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        // 设置 canvas 尺寸为图片尺寸
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // 绘制图片到 canvas 上
+        context.drawImage(img, 0, 0, img.width, img.height);
+
+        // 获取图像数据
+        const imageData = context.getImageData(0, 0, img.width, img.height);
+        const data = imageData.data;
+
+        let totalBrightness = 0;
+
+        // 遍历每个像素
+        for (let i = 0; i < data.length; i += 4) {
+            // 获取 RGB 值
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+
+            // 使用亮度公式计算该像素的亮度（加权平均法）
+            const brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            totalBrightness += brightness;
+        }
+
+        // 计算平均亮度
+        const avgBrightness = totalBrightness / (img.width * img.height);
+
+        // 反转亮度以表示黑暗程度，0（最明亮）到 1（最黑暗）
+        const darkness = 1 - avgBrightness;
+
+        canvas.remove()
+
+        resolve(darkness);
+    });
+}
+
+/**
  * 保存主题
  */
 const saveTheme = () => {
@@ -199,6 +247,7 @@ const saveTheme = () => {
         try {
             globalVars.theme.bgImage = imgElement.src
             localStorage.setItem("theme", JSON.stringify(globalVars.theme))
+            calculateImageDarkness(imgElement).then(v => changeTheme(v >= 0.5 ? 2 : 1))
             html.style.backgroundImage = `url('${imgElement.src}')`
         } catch (e) {
             snackbar({ message: "图片保存失败！请考虑手动压缩图片(图片大小 <= 5MB)后再试。", autoCloseDelay: 3000 })
@@ -231,7 +280,29 @@ export const openDialog = () => {
 }
 
 export const useGlass = ref(globalVars.theme.useGlass !== false)
+
+function useImgURL() {
+    prompt({
+        headline: "使用网络图片", description: "输入图片链接来使用网络图片(若更大的GIF等)", confirmText: "确定", cancelText: "取消", onConfirm: (v) => {
+            imgElement.src = v;
+
+            fetch(v, {
+                method: "HEAD"
+            }).then(() => {
+                const imageDiv = document.getElementById('color-wallpaper-div')
+                imageDiv.style.backgroundImage = `url('${imgElement.src}')`;
+
+                const useImageChkBox = document.getElementById("useImage")
+                useImageChkBox.removeAttribute("disabled")
+            }).catch(e => {
+                snackbar({ message: "无法使用此图片，请检查你的连接有效性及源网站是否由设置保护！" })
+            })
+        }
+    })
+}
 </script>
+
+
 <style lang="less" scoped>
 #colorShow {
     border-radius: var(--mdui-shape-corner-medium);

@@ -1,4 +1,5 @@
 import { globalVars } from "./globalVars"
+import config from '../../package.json'
 
 const defaultTheme = {
     light: "auto",
@@ -13,3 +14,5 @@ if (localStorage.getItem("theme") == null) {
 }
 // 加载主题配置
 globalVars.theme = JSON.parse(localStorage.getItem("theme"))
+
+console.log(`Welcome to ChenServer Version ${config.version}`)

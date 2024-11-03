@@ -99,7 +99,6 @@ onMounted(() => {
     drawer = document.getElementById("music-drawer")
     const audio = document.getElementById("audioElement")
     loading.value = false
-    console.log(available.value)
 
     // 修改进度条提示函数
     const slider = document.getElementById("music-slider")

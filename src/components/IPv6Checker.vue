@@ -33,7 +33,6 @@ const getIP = () => {
             hasV6.value = true;
         },
         error: function (xhr, status, e) {
-            console.log(xhr, status, e)
             fetch('https://api6.ipify.org', { method: 'GET' })
                 .then(response => {
                     if (response.ok) {

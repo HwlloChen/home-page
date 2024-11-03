@@ -17,7 +17,6 @@ onMounted(() => {
 		v ? document.body.classList.add("glass") : document.body.classList.remove("glass")
 	})
 })
-
 </script>
 
 <template>
@@ -93,4 +92,5 @@ onMounted(() => {
 mdui-layout {
 	box-sizing: border-box;
 }
+
 </style>

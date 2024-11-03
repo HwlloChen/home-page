@@ -11,7 +11,7 @@
             :style="player.playingMusic.value.pause ? '' : 'color: rgb(var(--mdui-color-primary))'" @click="opendrawer"
             v-if="hasV6"></mdui-button-icon>
         <mdui-tooltip :content="tip">
-            <mdui-button-icon :icon="brightness_icon" @click="changeTheme"></mdui-button-icon>
+            <mdui-button-icon :icon="brightness_icon" @click="changeTheme(brightness_modes.indexOf(globalVars.theme.light) + 1)"></mdui-button-icon>
         </mdui-tooltip>
         <mdui-dropdown>
             <mdui-button-icon slot="trigger" icon="more_vert"></mdui-button-icon>
@@ -31,25 +31,13 @@ import { onMounted, ref } from 'vue';
 import { openDialog } from './Theme.vue';
 import { globalVars } from '@/utils/globalVars';
 
-const tip = ref("明暗主题")
-const brightness_icon = ref()
-
 /**
  * 设置明暗主题
  */
-const brightness_modes = ['auto', 'light', 'dark']
+
 setTheme(globalVars.theme.light)
 brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(globalVars.theme.light)]
 tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(globalVars.theme.light)]
-const changeTheme = () => {
-    var value = brightness_modes.indexOf(globalVars.theme.light) + 1;
-    if (value > 2) value = 0;
-    globalVars.theme.light = brightness_modes[value]
-    setTheme(globalVars.theme.light)
-    brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(globalVars.theme.light)]
-    tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(globalVars.theme.light)]
-    localStorage.setItem("theme", JSON.stringify(globalVars.theme))
-}
 
 onMounted(() => {
     function formatLocation(l) {
@@ -89,6 +77,10 @@ onMounted(() => {
 const subtitleText = ref("")
 document.title = globalVars.siteName
 
+const tip = ref("明暗主题")
+const brightness_icon = ref()
+const brightness_modes = ['auto', 'light', 'dark']
+
 const clearlocalStorage = () => {
     confirm({
         headline: "清除数据？",
@@ -97,6 +89,19 @@ const clearlocalStorage = () => {
         cancelText: "取消",
         onConfirm: () => { localStorage.clear(); location.reload() },
     });
+}
+
+/**
+ * Change light theme
+ * @param value 0: auto, 1: light, 2: dark
+ */
+export function changeTheme(value) {
+    if (value > 2) value = 0;
+    globalVars.theme.light = brightness_modes[value]
+    setTheme(globalVars.theme.light)
+    brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(globalVars.theme.light)]
+    tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(globalVars.theme.light)]
+    localStorage.setItem("theme", JSON.stringify(globalVars.theme))
 }
 
 export const subtitle = {

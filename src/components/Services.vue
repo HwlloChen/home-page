@@ -42,7 +42,6 @@ const sites = ref([])
 fetch(`${globalVars.backpoint}/sites`).then(response => response.json())
 	.then(data => {
 		sites.value = data
-		console.log(sites)
 	}).catch(e => {
 		//使用硬编码值
 		sites.value = [
