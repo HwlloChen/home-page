@@ -14,7 +14,7 @@ import { globalVars } from '@/utils/globalVars';
 const info = ref('未知IP状态')
 const tip = ref("？？？？？")
 
-const testUrl = `${globalVars.backpoint_v6}/get_ip`
+const testUrl = `${globalVars.site.backpoint_v6}/get_ip`
 
 const getIP = () => {
     info.value = '正在检测您的IP地址'

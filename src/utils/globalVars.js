@@ -1,9 +1,6 @@
 import { reactive } from "vue";
 
 const globalVars = reactive({
-    siteName: 'ChenServer',
-    backpoint: 'https://v4.chenserver.top:11450/api',
-    backpoint_v6: "https://www.chenserver.top:81",
     navidrome: { // 此处配置应在后期迁移至后端服务器获取（可能是直接得到cookie）
         // Navidrome音乐服务器
         server: "https://www.chenserver.top:81/music",
@@ -26,6 +23,16 @@ const globalVars = reactive({
         bgImage: undefined,
         useGlass: undefined,
     },
+    author: {
+        name: "Chen",
+        email: "hwllochen@qq.com"
+    },
+    site: {
+        name: "ChenServer",
+        created_date: "2022-10-09T00:00:00", // ISO8601格式日期字符串，记录网站创建时间, 胡填代表不使用
+        backpoint: 'https://v4.chenserver.top:11450/api',
+        backpoint_v6: "https://www.chenserver.top:81",
+    }
 })
 
 export { globalVars }

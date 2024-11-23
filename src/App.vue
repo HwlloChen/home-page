@@ -9,6 +9,7 @@ import { onMounted, watch } from 'vue';
 import { globalVars } from './utils/globalVars';
 import { hasV6 } from './components/IPv6Checker.vue';
 import Music from './components/Music.vue';
+import Footer from './components/Footer.vue';
 
 onMounted(() => {
 	//绑定glass类到body
@@ -33,8 +34,8 @@ onMounted(() => {
 					<AboutMe />
 				</div>
 			</div>
-
 		</mdui-layout-main>
+		<Footer />
 	</mdui-layout>
 	<Theme />
 	<Music v-if="hasV6" />
@@ -91,6 +92,11 @@ onMounted(() => {
 
 mdui-layout {
 	box-sizing: border-box;
+	flex-direction: column;
+	min-height: 100vh;
 }
 
+mdui-layout-main {
+	flex: 1;
+}
 </style>

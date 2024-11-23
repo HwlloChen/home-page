@@ -2,7 +2,7 @@
     <mdui-top-app-bar scroll-behavior="elevate" id="appbar" class="glass-border">
         <div style="width: 5px;"></div>
         <mdui-top-app-bar-title>
-            {{ globalVars.siteName }}
+            {{ globalVars.site.name }}
             <span class="subtitle" id="mainsubtitle">{{ subtitleText }}</span>
         </mdui-top-app-bar-title>
         <div style="flex-grow: 1"></div>
@@ -58,7 +58,7 @@ onMounted(() => {
         return sum
     }
 
-    fetch(`${globalVars.backpoint}/ip`)
+    fetch(`${globalVars.site.backpoint}/ip`)
         .then((response) => response.json())
         .then((data) => {
             subtitle.text(`欢迎来自「${formatLocation(data.location)}」的朋友！`)
@@ -75,7 +75,7 @@ onMounted(() => {
 <script>
 
 const subtitleText = ref("")
-document.title = globalVars.siteName
+document.title = globalVars.site.name
 
 const tip = ref("明暗主题")
 const brightness_icon = ref()

@@ -11,7 +11,7 @@ bg = "https://chenserver.top/dl/pic.png"
 	<template v-for="site in sites">
 		<section>
 			<mdui-card variant="elevated" :class="site.cover ? 'bg' : 'text'"
-				:style="`--bg-url: url(${site.cover ? site.cover : ''}); --site-title: '${site.title}'`">
+				:style="`--bg-url: url(${site.cover ? site.cover : ''}); --site-title: '${addEscapeToQuotes(site.title)}'`">
 				<div class="info">
 					<div class="primary">
 						<div class="title">
@@ -39,29 +39,35 @@ bg = "https://chenserver.top/dl/pic.png"
 var bg
 const sites = ref([])
 
-fetch(`${globalVars.backpoint}/sites`).then(response => response.json())
+fetch(`${globalVars.site.backpoint}/sites`).then(response => response.json())
 	.then(data => {
 		sites.value = data
 	}).catch(e => {
 		//使用硬编码值
 		sites.value = [
 			{
-				"blank": false,
-				"cover": false,
-				"description": "My blog!!",
 				"title": "Chen's Blog",
-				"url": "https://blog.chenserver.top:81"
+				"description": "My blog!!",
+				"url": "https://blog.chenserver.top:81",
+				"cover": false,
+				"blank": false,
+				"v6": true
 			},
 			{
-				"blank": true,
+				"title": "弘毅Club",
+				"description": "士不可以不弘毅，任重而道远！",
+				"url": "https://hyclub.top",
 				"cover": false,
-				"description": "My blog!!",
-				"title": "Chen's Blog",
-				"url": "https://blog.chenserver.top:81"
+				"blank": true,
+				"v6": false
 			}
 		]
 	})
 
+function addEscapeToQuotes(s) {
+	// 使用正则表达式全局匹配 " 和 '
+	return s.replace(/(["'])/g, '\\$1');
+}
 </script>
 
 <style lang="less" scoped>
@@ -92,6 +98,7 @@ mdui-card {
 	position: relative;
 	transition: box-shadow .3s;
 	box-shadow: var(--mdui-elevation-level1);
+
 	&:hover {
 		box-shadow: var(--mdui-elevation-level4);
 	}
@@ -184,7 +191,7 @@ mdui-card {
 		height: 35px;
 		padding: 1rem;
 		background-color: rgba(var(--mdui-color-surface-container-highest), 0.8);
-		
+
 
 		mdui-divider {
 			width: 100%;
@@ -228,8 +235,8 @@ mdui-card {
 		background-color: rgba(var(--mdui-color-surface-container-highest), 0.5);
 		backdrop-filter: blur(5px);
 
-		border: 0!important;
-		border-top: 1px solid rgba(255, 255, 255, 0.05)!important;
+		border: 0 !important;
+		border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
 	}
 
 	mdui-card {
