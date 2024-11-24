@@ -9,13 +9,10 @@ var createdDate
 onBeforeMount(() => {
     if (Date.parse(globalVars.site.created_date) == Date.parse(globalVars.site.created_date)) {
         createdDate = new Date(globalVars.site.created_date)
+        const createdDateNumber = createdDate.getTime()
         dateFlag.value = true
 
-        setInterval(() => {
-            const now = new Date();
-            refDate.value = formatDuration(now.getTime() - createdDate.getTime())
-
-        }, 1000);
+        setInterval(() => { refDate.value = formatDuration(new Date().getTime() - createdDateNumber) }, 1000);
     } else {
         dateFlag.value = false
     }
@@ -33,42 +30,40 @@ onBeforeMount(() => {
 </template>
 
 <script>
+
+// 预先计算各时间单位的毫秒数，使用常量避免重复计算
+const MS_PER_SECOND = 1000;
+const MS_PER_MINUTE = MS_PER_SECOND * 60;
+const MS_PER_HOUR = MS_PER_MINUTE * 60;
+const MS_PER_DAY = MS_PER_HOUR * 24;
+const MS_PER_YEAR = MS_PER_DAY * 365;
+
 function formatDuration(ms) {
-    // 定义常量
-    const secondsPerMinute = 60;
-    const minutesPerHour = 60;
-    const hoursPerDay = 24;
-    const daysPerYear = 365;
-    const daysPerMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    // 使用 Math.floor 进行向下取整，比 parseInt 性能更好
+    const years = Math.floor(ms / MS_PER_YEAR);
+    ms %= MS_PER_YEAR;
 
-    // 计算各个单位的值
-    let remaining = ms;
-    let years = Math.floor(remaining / 1000 / secondsPerMinute / minutesPerHour / hoursPerDay / daysPerYear);
-    remaining %= 1000 * secondsPerMinute * minutesPerHour * hoursPerDay * daysPerYear;
-    let days = Math.floor(remaining / 1000 / secondsPerMinute / minutesPerHour / hoursPerDay);
-    remaining %= 1000 * secondsPerMinute * minutesPerHour * hoursPerDay;
-    let hours = Math.floor(remaining / 1000 / secondsPerMinute / minutesPerHour);
-    remaining %= 1000 * secondsPerMinute * minutesPerHour;
-    let minutes = Math.floor(remaining / 1000 / secondsPerMinute);
-    // 重新赋值remaining
-    remaining %= 1000 * secondsPerMinute;
-    let seconds = Math.floor(remaining / 1000);
+    const days = Math.floor(ms / MS_PER_DAY);
+    ms %= MS_PER_DAY;
 
-    // 处理闰年
-    const isLeapYear = year => year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-    if (isLeapYear(years)) {
-        daysPerMonth[1] = 29;
-    }
+    const hours = Math.floor(ms / MS_PER_HOUR);
+    ms %= MS_PER_HOUR;
 
-    // 计算月
-    let months = 0;
-    while (days >= daysPerMonth[months]) {
-        days -= daysPerMonth[months];
-        months++;
-    }
+    const minutes = Math.floor(ms / MS_PER_MINUTE);
+    ms %= MS_PER_MINUTE;
 
-    // 格式化输出
-    return `${years}年${months}月${days}天${hours}小时${minutes}分钟${seconds}秒`;
+    const seconds = Math.floor(ms / MS_PER_SECOND);
+
+    // 使用数组和 filter 来动态构建输出字符串，只显示非零值
+    const parts = [
+        years > 0 && `${years}年`,
+        days > 0 && `${days}天`,
+        hours > 0 && `${hours}时`,
+        minutes > 0 && `${minutes}分`,
+        `${seconds}秒`
+    ].filter(Boolean);
+
+    return parts.join('');
 }
 </script>
 
