@@ -2,7 +2,8 @@
 import { globalVars } from '@/utils/globalVars';
 import config from '../../package.json';
 import { onBeforeMount, ref } from 'vue';
-import { player } from './Music.vue';
+import { opendrawer, player } from './Music.vue';
+import { hasV6 } from './IPv6Checker.vue';
 
 const refDate = ref("")
 const dateFlag = ref(false)
@@ -23,13 +24,15 @@ onBeforeMount(() => {
 <template>
     <footer>
         <div class="footer-music left">
-            <img class="playing-music-cover" :src="player.playingMusic.value.cover">
-            <div class="footer-music-info">
-                <b>{{ player.playingMusic.value.title }}</b>
-                <br>
-                {{ player.playingMusic.value.pause ? '⏸️ Paused:' : '🎵 Playing:' }}
-                {{ `${player.playingMusic.value.nowTimeString} / ${player.playingMusic.value.maxTimeString}` }}
-            </div>
+            <template v-if="hasV6">
+                <img class="playing-music-cover" :src="player.playingMusic.value.cover" @click="opendrawer">
+                <div class="footer-music-info">
+                    <b>{{ player.playingMusic.value.title }}</b>
+                    <br>
+                    {{ player.playingMusic.value.pause ? '⏸️ Paused:' : '🎵 Playing:' }}
+                    {{ `${player.playingMusic.value.nowTimeString} / ${player.playingMusic.value.maxTimeString}` }}
+                </div>
+            </template>
         </div>
         <div class="footer-content center">
             <p>©<span v-if="dateFlag">{{ createdDate.getFullYear() }} - </span>{{ new Date().getFullYear() }} ♥️ {{
@@ -155,6 +158,7 @@ footer {
         object-fit: cover;
         display: block;
         border-radius: var(--mdui-shape-corner-large);
+        cursor: pointer;
     }
 
     .footer-music-info {
