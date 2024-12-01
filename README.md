@@ -3,15 +3,27 @@
 Hi there!👋
 
 #### 介绍
-ChenServer的新主页，目前处于项目初期。
+ :tw-1f680: :tw-1f680: :tw-1f680: 个人服务器主页的最佳选择 :kissing_heart: 你的下一代个人服务器主页！
+
+目前已被用于ChenServer的新主页。
 
 使用 [Vuejs](https://vuejs.org) 和 [mdui](https://mdui.org)
-
-~~代码比较屎~~（我也是边做边学）
 
 [Demo Page(https://chenserver.top)](https://chenserver.top)
 
 以GPLv3协议开源。
+
+#### 特性
+
+- 配合后端服务器实现动态更改服务列表
+- 可自定义的前端主题系统
+- 使用Material Design 3(Material You)设计风格
+- 支持连接Navidrome音乐服务器
+- 主题自动适配
+- 支持连接Hitokoto一言
+- (制作中)站长个人信息卡片
+- (计划中)支持Artalk等社交系统
+- (计划中)支持使用不算子或51.la统计数据
 
 #### 初始化
 
