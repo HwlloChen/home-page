@@ -17,7 +17,7 @@ const globalVars = reactive({
         ipv6: true,
         login: null,
     },
-    theme: {
+    theme: { // 默认主题设置在init.js中
         light: undefined,
         color: undefined,
         bgImage: undefined,
