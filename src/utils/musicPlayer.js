@@ -17,6 +17,8 @@ class MusicPlayer {
         this.audio.addEventListener('timeupdate', () => this.updateNowTime());
     }
 
+    playlistLoaded = false;
+
     // 加载播放列表
     loadPlaylist(songs) {
         this.playlist = songs;
@@ -40,6 +42,7 @@ class MusicPlayer {
             else this.lastTracks = storage.lastTracks
         }
         else this.loadTrack(0);
+        this.playlistLoaded = true;
     }
 
     // 格式化时间为 mm:ss

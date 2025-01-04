@@ -61,39 +61,57 @@ import { MusicPlayer } from '@/utils/musicPlayer';
 import { snackbar } from 'mdui';
 import { onBeforeMount, onMounted, ref } from 'vue';
 
-onBeforeMount(() => {
-    /**
-     * 初始化音乐组件
-     */
-
-    // 检查token
+onBeforeMount(async () => {
+    // 初始化音乐组件
     try {
-        if (localStorage.getItem("navidrome") == null || JSON.parse(localStorage.getItem("navidrome")).token == undefined) {
-            updateToken().then(function () {
-                return new Promise(function (resolve, reject) {
-                    headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`
-                    headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id
-                    keepAlive().then(resolve()).catch(() => { throw new Error("Cannot do keepAlive!") })
-                })
-            }).then(() => {
-                getMusicList().then(() => player.loadPlaylist(music_list.value)).catch(() => { throw new Error("Cannot get MusicList!") })
-            })
-        } else {
-            headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`
-            headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id
-            keepAlive().then(() => {
-                getMusicList().then(() => player.loadPlaylist(music_list.value)).catch(() => { throw new Error("Cannot get MusicList!") })
-            })
+        // 确保 localStorage 存在且有效
+        const navidrome = localStorage.getItem("navidrome");
+        const token = navidrome ? JSON.parse(navidrome)?.token : null;
+        
+        if (!token) {
+            // 没有token,执行登录流程
+            await updateToken();
         }
-
+        
+        // 设置请求头
+        headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
+        headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
+        
+        // 验证token是否有效
+        await keepAlive();
+        
+        // 获取音乐列表
+        await getMusicList();
+        
+        // 加载播放列表
+        player.loadPlaylist(music_list.value);
+        
+        available.value = true;
+        
     } catch (e) {
-        available.value = false
-        console.warn("get error", e)
-        return
+        console.warn("Music initialization error:", e);
+        
+        // 尝试重新获取token
+        try {
+            await updateToken();
+            headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
+            headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
+            
+            await keepAlive();
+            await getMusicList();
+            player.loadPlaylist(music_list.value);
+            
+            available.value = true;
+        } catch (retryError) {
+            console.error("Music initialization failed after retry:", retryError);
+            available.value = false;
+            snackbar({ 
+                message: "无法连接到音乐服务器，请稍后重试",
+                autoCloseDelay: 3000 
+            });
+        }
     }
-
-    available.value = true
-})
+});
 
 onMounted(() => {
     drawer = document.getElementById("music-drawer")
@@ -128,38 +146,30 @@ const music_list = ref([])
 export const loading = ref(true)
 var firstflag = true
 
-function updateToken() {
-    return new Promise(function (resolve, reject) {
-        // 获取cookie
-        fetch(`${globalVars.navidrome.server}/auth/login`, {
-            method: "POST",
-            body: JSON.stringify({
-                username: globalVars.navidrome.user,
-                password: globalVars.navidrome.password
-            })
-        }).then(response => {
-            if (response.ok) {
-                // 保存登陆信息
-                response.json().then(data => {
-                    localStorage.setItem("navidrome", JSON.stringify(data))
-                    console.log("Updated Navidrome Token")
-                    if (data.isAdmin) { snackbar({ message: "请避免使用管理员Navidrome账户" }); console.warn("请避免使用管理员Navidrome账户") }
-                    resolve()
-                })
-            } else {
-                // 配置有误
-                if (response.status === 401) {
-                    snackbar({ message: "Navidrome音乐服务器用户名或密码错误", autoCloseDelay: 3000 })
-                    console.error("Navidrome音乐服务器用户名或密码错误")
-                } else {
-                    snackbar({ message: "连接到Navidrome服务器时出现未知错误", autoCloseDelay: 3000 })
-                    console.error("连接到Navidrome服务器时出现未知错误");
-                }
-                available.value = false
-                reject("Navidrome Music Plugin Error");
-            }
+async function updateToken() {
+    const response = await fetch(`${globalVars.navidrome.server}/auth/login`, {
+        method: "POST",
+        body: JSON.stringify({
+            username: globalVars.navidrome.user,
+            password: globalVars.navidrome.password
         })
-    })
+    });
+
+    if (!response.ok) {
+        throw new Error(response.status === 401 ? 
+            "Navidrome用户名或密码错误" : 
+            "连接Navidrome服务器失败"
+        );
+    }
+
+    const data = await response.json();
+    localStorage.setItem("navidrome", JSON.stringify(data));
+    
+    if (data.isAdmin) {
+        console.warn("请避免使用管理员Navidrome账户");
+    }
+    
+    return data;
 }
 
 function keepAlive() {
@@ -207,7 +217,7 @@ function getMusicList() {
 
 export const opendrawer = () => {
     drawer.open = !drawer.open
-    if (firstflag) {
+    if (firstflag && player.playlistLoaded) {
         setTimeout(() => {
             // 平滑滚动到指定元素
             const targets = document.querySelector(".music-list").children;
