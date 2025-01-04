@@ -31,7 +31,7 @@ function showAnnouncements() {
                     placement: 'top-end',
                 })
                 h++
-                setTimeout(showAnnouncement(), 300)
+                setTimeout(() => { showAnnouncement() }, 350)
             } else if (!readedList.includes(MD5(a.content + a.publisher + a.publishTime).toString())) {
                 if (a.importance == 2) {
                     snackbar({
