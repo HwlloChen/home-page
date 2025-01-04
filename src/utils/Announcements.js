@@ -18,7 +18,7 @@ function showAnnouncements() {
         if (h < l) {
             const a = globalVars.announcements[h]
             console.log(a)
-            if(new Date() - new Date(a.publishTime) > (1000 * 60 * 60 * 24) * 21 ) { // 21天前的公告不再显示
+            if (new Date() - new Date(a.publishTime) > (1000 * 60 * 60 * 24) * 21) { // 21天前的公告不再显示
                 h++
                 showAnnouncement()
                 return
@@ -31,7 +31,7 @@ function showAnnouncements() {
                     placement: 'top-end',
                 })
                 h++
-                showAnnouncement()
+                setTimeout(showAnnouncement(), 300)
             } else if (!readedList.includes(MD5(a.content + a.publisher + a.publishTime).toString())) {
                 if (a.importance == 2) {
                     snackbar({
