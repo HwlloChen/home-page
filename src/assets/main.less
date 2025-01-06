@@ -91,7 +91,6 @@ a {
 	vertical-align: top;
 	outline: none;
 	color: rgb(var(--mdui-color-primary));
-	;
 
 	&::before {
 		position: absolute;
@@ -101,7 +100,6 @@ a {
 		width: 100%;
 		height: 1px;
 		background-color: rgb(var(--mdui-color-primary));
-		;
 		transform: scaleX(0);
 		backface-visibility: hidden;
 		transition: all 0.2s;
@@ -131,9 +129,45 @@ a {
 	animation-play-state: paused!important;
 }
 
-.iconsnackbar {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	text-justify: center;
+mdui-snackbar {
+	.iconsnackbar {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-justify: center;
+	}
+
+	.mdui-theme-auto & a {
+		@media (prefers-color-scheme: dark) {
+			color: rgb(var(--mdui-color-primary-light)) !important;
+		}
+
+		@media (prefers-color-scheme: light) {
+			color: rgb(var(--mdui-color-primary-dark)) !important;
+		}
+
+		&::before {
+			@media (prefers-color-scheme: dark) {
+				background-color: rgb(var(--mdui-color-primary-light)) !important;
+			}
+
+			@media (prefers-color-scheme: light) {
+				background-color: rgb(var(--mdui-color-primary-dark)) !important;
+			}
+		}
+	}
+
+	.mdui-theme-dark & a {
+		color: rgb(var(--mdui-color-primary-light)) !important;
+		&::before {
+			background-color: rgb(var(--mdui-color-primary-light)) !important;
+		}
+	}
+
+	.mdui-theme-light & a {
+		color: rgb(var(--mdui-color-primary-dark)) !important;
+		&::before {
+			background-color: rgb(var(--mdui-color-primary-dark)) !important;
+		}
+	}
 }

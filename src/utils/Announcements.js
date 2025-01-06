@@ -17,7 +17,6 @@ function showAnnouncements() {
     function showAnnouncement() {
         if (h < l) {
             const a = globalVars.announcements[h]
-            console.log(a)
             if (new Date() - new Date(a.publishTime) > (1000 * 60 * 60 * 24) * 21) { // 21天前的公告不再显示
                 h++
                 showAnnouncement()
@@ -28,7 +27,7 @@ function showAnnouncements() {
                     message: a.content,
                     autoCloseDelay: 2500,
                     closeOnOutsideClick: true,
-                    placement: 'top-end',
+                    placement: 'bottom-start',
                 })
                 h++
                 setTimeout(() => { showAnnouncement() }, 350)
