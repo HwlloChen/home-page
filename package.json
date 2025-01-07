@@ -1,6 +1,6 @@
 {
   "name": "homepage",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,6 +11,7 @@
   "dependencies": {
     "@simonwep/pickr": "^1.9.1",
     "aos": "^2.3.4",
+    "artalk": "^2.9.1",
     "compressorjs": "^1.2.1",
     "mdui": "^2.1.2",
     "pace": "^0.0.4",

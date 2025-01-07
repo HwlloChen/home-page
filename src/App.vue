@@ -10,6 +10,7 @@ import { globalVars } from './utils/globalVars';
 import { hasV6 } from './components/IPv6Checker.vue';
 import Music from './components/Music.vue';
 import Footer from './components/Footer.vue';
+import Comments from './components/Comments.vue';
 
 onMounted(() => {
 	//绑定glass类到body
@@ -28,7 +29,26 @@ onMounted(() => {
 			<Yiyan />
 			<div class="main">
 				<main id="content">
-					<Services />
+					<section>
+						<div class="section-title" data-aos="fade-right">
+							<mdui-icon name="dns--rounded"></mdui-icon>
+							<div class="section-title-text">
+								<span class="chinese">服务</span>
+								<span class="english ubuntu-light-italic">Services</span>
+							</div>
+						</div>
+						<Services />
+					</section>
+					<section v-if="globalVars.artalk.enable">
+						<div class="section-title" data-aos="fade-right">
+							<mdui-icon name="comment"></mdui-icon>
+							<div class="section-title-text">
+								<span class="chinese ">留言板</span>
+								<span class="english ubuntu-light-italic">Comments</span>
+							</div>
+						</div>
+						<Comments />
+					</section>
 				</main>
 				<div id="side" v-if="false">
 					<AboutMe />
@@ -38,7 +58,7 @@ onMounted(() => {
 		<Footer />
 	</mdui-layout>
 	<Theme />
-	<Music v-if="hasV6" />
+	<Music v-if="hasV6 && globalVars.navidrome.enable" />
 </template>
 
 <style lang="less" scoped>
@@ -98,5 +118,39 @@ mdui-layout {
 
 mdui-layout-main {
 	flex: 1;
+}
+
+.section-title {
+	font-size: 1.75rem;
+	margin-bottom: 1rem;
+	display: flex;
+	align-items: center;
+	align-content: center;
+	text-align: center;
+
+	mdui-icon {
+		margin-right: 10px;
+		font-size: 1.75rem;
+	}
+
+	.section-title-text {
+		display: flex;
+		align-items: flex-end;
+		/* 底部对齐 */
+
+		.english {
+			margin-left: 0.5rem;
+			color: rgb(var(--mdui-color-secondary));
+		}
+	}
+
+	@media(max-width: 1080px) {
+		font-size: 1.5rem;
+		margin-left: 0;
+	}
+	@media(min-width: 1081px) {
+		font-size: 1.75rem;
+		margin-left: -1rem;
+	}
 }
 </style>

@@ -2,6 +2,7 @@ import { reactive } from "vue";
 
 const globalVars = reactive({
     navidrome: { // 此处配置应在后期迁移至后端服务器获取（可能是直接得到cookie）
+        enable: true,
         // Navidrome音乐服务器
         server: "https://www.chenserver.top:81/music",
         /**
@@ -32,6 +33,12 @@ const globalVars = reactive({
         created_date: "2022-10-09T00:00:00", // ISO8601格式日期字符串，记录网站创建时间, 胡填代表不使用
         backpoint: 'https://v4.chenserver.top:11450/api',
         backpoint_v6: "https://www.chenserver.top:81",
+    },
+    artalk: {
+        enable: false,
+        server: "https://artalk.chenserver.top",
+        site: "ChenServer主站",
+        pageTitle: "ChenServer",
     }
 })
 

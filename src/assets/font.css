@@ -1,6 +1,7 @@
 @import url('fonts/Ubuntu/Ubuntu.css');
 @import url("fonts/Material Icons/Filled/Filled.css");
 @import url("fonts/Material Icons/Outlined/Outlined.css");
+@import url("fonts/Material Icons/Rounded/Rounded.css");
 
 .ubuntu-light {
     font-family: "Ubuntu", sans-serif;

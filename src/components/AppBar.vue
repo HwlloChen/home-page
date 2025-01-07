@@ -9,7 +9,7 @@
         <IPv6Checker />
         <mdui-button-icon icon="queue_music" :="{ disabled: !available, loading: loading }"
             :style="player.playingMusic.value.pause ? '' : 'color: rgb(var(--mdui-color-primary))'" @click="opendrawer"
-            v-if="hasV6"></mdui-button-icon>
+            v-if="hasV6 && globalVars.navidrome.enable"></mdui-button-icon>
         <mdui-tooltip :content="tip">
             <mdui-button-icon :icon="brightness_icon" @click="changeTheme(brightness_modes.indexOf(globalVars.theme.light) + 1)"></mdui-button-icon>
         </mdui-tooltip>
@@ -30,6 +30,7 @@ import { confirm, setTheme } from 'mdui';
 import { onMounted, ref } from 'vue';
 import { openDialog } from './Theme.vue';
 import { globalVars } from '@/utils/globalVars';
+import { artalk } from './Comments.vue';
 
 /**
  * 设置明暗主题
@@ -79,7 +80,7 @@ document.title = globalVars.site.name
 
 const tip = ref("明暗主题")
 const brightness_icon = ref()
-const brightness_modes = ['auto', 'light', 'dark']
+export const brightness_modes = ['auto', 'light', 'dark']
 
 const clearlocalStorage = () => {
     confirm({
@@ -96,9 +97,10 @@ const clearlocalStorage = () => {
  * @param value 0: auto, 1: light, 2: dark
  */
 export function changeTheme(value) {
-    if (value > 2) value = 0;
+    value = value % 3;
     globalVars.theme.light = brightness_modes[value]
     setTheme(globalVars.theme.light)
+    artalk === artalk ? artalk.setDarkMode(["auto", false, true][value]) : null
     brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(globalVars.theme.light)]
     tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(globalVars.theme.light)]
     localStorage.setItem("theme", JSON.stringify(globalVars.theme))

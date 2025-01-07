@@ -14,7 +14,8 @@
                 <p style="margin-top: 8px;">
                     已选择的颜色: <span id="colorShow">{{ color }}</span>
                 </p>
-                <mdui-button style="margin-top: .8rem;" id="color-from-image" variant="tonal">从图片中提取颜色</mdui-button>
+                <mdui-button style="margin-top: .8rem;" id="color-from-image" @click="colorFromImage"
+                    variant="tonal">从图片中提取颜色</mdui-button>
                 <br />
                 <mdui-checkbox id="useGlass" :="{ checked: useGlass }">亚克力材质</mdui-checkbox>
             </div>
@@ -103,78 +104,6 @@ onMounted(() => {
 
         }
     });
-    const pickr = Pickr.create({
-        el: '#color-picker',
-        theme: 'nano', // or 'monolith', or 'nano'
-
-        swatches: [
-            'rgba(255, 0, 0, 1)',    // 红色
-            'rgba(0, 255, 0, 1)',    // 绿色
-            'rgba(0, 0, 255, 1)',    // 蓝色
-            'rgba(255, 255, 0, 1)',  // 黄色
-            'rgba(0, 255, 255, 1)',  // 青色
-            'rgba(255, 0, 255, 1)',  // 品红
-            'rgba(255, 165, 0, 1)'   // 橙色
-        ],
-
-        components: {
-
-            // Main components
-            preview: true,
-            opacity: false,
-            hue: true,
-
-            interaction: {
-                input: true,
-                cancel: true,
-                save: true,
-            }
-        },
-
-        lockOpacity: true,
-        default: color.value,
-        position: "right-middle",
-        i18n: {
-            // UI 中可见的字符串
-            'ui:dialog': '颜色选择器对话框',
-            'btn:toggle': '切换颜色选择器对话框',
-            'btn:swatch': '颜色样本',
-            'btn:last-color': '使用上一个颜色',
-            'btn:save': '保存',
-            'btn:cancel': '重置',
-            'btn:clear': '清除',
-
-            // 用于 aria-label 的字符串
-            'aria:btn:save': '保存并关闭',
-            'aria:btn:cancel': '取消并关闭',
-            'aria:btn:clear': '清除并关闭',
-            'aria:input': '颜色输入字段',
-            'aria:palette': '颜色选择区域',
-            'aria:hue': '色相选择滑块',
-            'aria:opacity': '不透明度选择滑块'
-        },
-        useAsButton: true,
-    });
-
-    pickr.on("save", function () {
-        const colorShow = document.getElementById("colorShow")
-        color.value = "#" + pickr.getColor().toHEXA().join("")
-        colorShow.style.backgroundColor = color.value
-        pickr.hide()
-    })
-
-    document.getElementById("color-from-image").addEventListener("click", function () {
-        if (!imgElement.src || imgElement.src.trim() === '') {
-            console.log("Image src is empty");
-            snackbar({ placement: "top-end", message: "请先选择一个图片！", autoCloseDelay: 3000 })
-        } else {
-            getColorFromImage(imgElement).then(c => {
-                color.value = c
-                colorShow.style.backgroundColor = color.value
-                pickr.setColor(color.value)
-            });
-        }
-    })
 })
 </script>
 
@@ -187,6 +116,7 @@ const color = ref(globalVars.theme.color)
 setColorScheme(color.value);
 const imgElement = new Image();
 var html
+var pickr
 
 /**
  * 判断图片明暗程度，返回一个0~1的数值
@@ -238,45 +168,111 @@ function calculateImageDarkness(img) {
 /**
  * 保存主题
  */
-const saveTheme = () => {
-    const useImageChkBox = document.getElementById("useImage")
-    const useGlassChkBox = document.getElementById("useGlass")
-    const useImage = useImageChkBox.hasAttribute("checked")
+function saveTheme() {
+    new Promise((resolve, reject) => {
+        const useImageChkBox = document.getElementById("useImage")
+        const useGlassChkBox = document.getElementById("useGlass")
+        const useImage = useImageChkBox.hasAttribute("checked")
 
-    if (useImage) {
-        try {
-            globalVars.theme.bgImage = imgElement.src
-            localStorage.setItem("theme", JSON.stringify(globalVars.theme))
-            calculateImageDarkness(imgElement).then(v => changeTheme(v >= 0.5 ? 2 : 1))
-            html.style.backgroundImage = `url('${imgElement.src}')`
-        } catch (e) {
-            snackbar({ message: "图片保存失败！请考虑手动压缩图片(图片大小 <= 5MB)后再试。", autoCloseDelay: 3000 })
-            console.warn(e)
-            return;
+        if (useImage) {
+            try {
+                globalVars.theme.bgImage = imgElement.src
+                localStorage.setItem("theme", JSON.stringify(globalVars.theme))
+                calculateImageDarkness(imgElement).then(v => changeTheme(v >= 0.5 ? 2 : 1))
+                html.style.backgroundImage = `url('${imgElement.src}')`
+            } catch (e) {
+                reject(e)
+            }
+        } else {
+            globalVars.theme.bgImage = false
+            html.style.backgroundImage = 'none';
         }
-    } else {
-        globalVars.theme.bgImage = false
-        html.style.backgroundImage = 'none';
-    }
 
-    globalVars.theme.color = color.value
-    setColorScheme(color.value)
+        globalVars.theme.color = color.value
+        setColorScheme(color.value)
 
-    globalVars.theme.useGlass = useGlassChkBox.hasAttribute("checked")
-    useGlass.value = globalVars.theme.useGlass
+        globalVars.theme.useGlass = useGlassChkBox.hasAttribute("checked")
+        useGlass.value = globalVars.theme.useGlass
 
-    localStorage.setItem("theme", JSON.stringify(globalVars.theme))
+        localStorage.setItem("theme", JSON.stringify(globalVars.theme))
 
-    snackbar({ placement: "top-end", message: "已保存并应用主题设置！", autoCloseDelay: 3000 })
+        resolve()
+    }).then(() => {
+        snackbar({ placement: "top-end", message: "已保存并应用主题设置！", autoCloseDelay: 3000 })
+    }).catch(e => {
+        snackbar({ message: "图片保存失败！请考虑手动压缩图片(图片大小 <= 5MB)后再试。", autoCloseDelay: 3000 })
+    })
 }
 
 export const openDialog = () => {
     const dialog = document.getElementById("colorDialog")
+    pickr = Pickr.create({
+        el: '#color-picker',
+        theme: 'nano', // or 'monolith', or 'nano'
+
+        swatches: [
+            '#F44336',    // 红色
+            '#009688',    // 茶色
+            '#2196F3',    // 蓝色
+            '#3F51B5',    // 群青
+            '#00BCD4',  // 青色
+            '#FFC107',  // 米黄
+            '#FF5722'   // 橙色
+        ],
+
+        components: {
+
+            // Main components
+            preview: true,
+            opacity: false,
+            hue: true,
+
+            interaction: {
+                input: true,
+                cancel: true,
+                save: true,
+            }
+        },
+
+        lockOpacity: true,
+        default: color.value,
+        position: "right-middle",
+        i18n: {
+            // UI 中可见的字符串
+            'ui:dialog': '颜色选择器对话框',
+            'btn:toggle': '切换颜色选择器对话框',
+            'btn:swatch': '颜色样本',
+            'btn:last-color': '使用上一个颜色',
+            'btn:save': '保存',
+            'btn:cancel': '重置',
+            'btn:clear': '清除',
+
+            // 用于 aria-label 的字符串
+            'aria:btn:save': '保存并关闭',
+            'aria:btn:cancel': '取消并关闭',
+            'aria:btn:clear': '清除并关闭',
+            'aria:input': '颜色输入字段',
+            'aria:palette': '颜色选择区域',
+            'aria:hue': '色相选择滑块',
+            'aria:opacity': '不透明度选择滑块'
+        },
+        useAsButton: true,
+    });
+
+    pickr.on("save", function () {
+        const colorShow = document.getElementById("colorShow")
+        color.value = "#" + pickr.getColor().toHEXA().join("")
+        colorShow.style.backgroundColor = color.value
+        pickr.hide()
+    })
     dialog.open = true;
     const dialogObserver = observeResize(html, function (entry, observer) {
         dialog.fullscreen = (entry.borderBoxSize[0].inlineSize <= 584)
     })
-    dialog.addEventListener("close", () => { dialogObserver.unobserve(); })
+    dialog.addEventListener("close", () => {
+        dialogObserver.unobserve();
+        pickr.destroyAndRemove()
+    })
 }
 
 export const useGlass = ref(globalVars.theme.useGlass !== false)
@@ -300,6 +296,23 @@ function useImgURL() {
         }
     })
 }
+
+function colorFromImage() {
+    const b = document.getElementById("color-from-image")
+    b.setAttribute("loading", true)
+    if (!imgElement.src || imgElement.src.trim() === '') {
+        console.log("Image src is empty");
+        snackbar({ placement: "top-end", message: "请先选择一个图片！", autoCloseDelay: 3000 })
+    } else {
+        getColorFromImage(imgElement).then(c => {
+            color.value = c
+            colorShow.style.backgroundColor = color.value
+            pickr.setColor(color.value)
+        });
+    }
+    b.removeAttribute("loading")
+}
+
 </script>
 
 

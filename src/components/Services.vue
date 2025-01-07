@@ -9,29 +9,27 @@ bg = "https://chenserver.top/dl/pic.png"
 
 <template>
 	<template v-for="site in sites">
-		<section>
-			<mdui-card variant="elevated" :class="site.cover ? 'bg' : 'text'" data-aos="zoom-in"
-				data-aos-anchor-placement="top-bottom"
-				:style="`--bg-url: url(${site.cover ? site.cover : ''}); --site-title: '${addEscapeToQuotes(site.title)}'`">
-				<div class="info">
-					<div class="primary">
-						<div class="title">
-							{{ site.title }}
-						</div>
-						<div class="description">
-							{{ site.description }}
-						</div>
+		<mdui-card variant="elevated" :class="site.cover ? 'bg' : 'text'" data-aos="zoom-in"
+			data-aos-anchor-placement="top-bottom"
+			:style="`--bg-url: url(${site.cover ? site.cover : ''}); --site-title: '${addEscapeToQuotes(site.title)}'`">
+			<div class="info">
+				<div class="primary">
+					<div class="title">
+						{{ site.title }}
 					</div>
-					<div class="actions">
-						<mdui-button :="{ disabled: (site.v6 && !hasV6) }" :href="site.url"
-							:target="site.blank ? '_blank' : '_self'" :end-icon="site.blank ? 'call_made' : ''"
-							class="go-button">前往</mdui-button>
-						<mdui-divider></mdui-divider>
-						<span class="ubuntu-light">{{ site.url }}</span>
+					<div class="description">
+						{{ site.description }}
 					</div>
 				</div>
-			</mdui-card>
-		</section>
+				<div class="actions">
+					<mdui-button :="{ disabled: (site.v6 && !hasV6) }" :href="site.url"
+						:target="site.blank ? '_blank' : '_self'" :end-icon="site.blank ? 'call_made' : ''"
+						class="go-button">前往</mdui-button>
+					<mdui-divider></mdui-divider>
+					<span class="ubuntu-light">{{ site.url }}</span>
+				</div>
+			</div>
+		</mdui-card>
 	</template>
 </template>
 
@@ -99,6 +97,7 @@ mdui-card {
 	position: relative;
 	transition: box-shadow .3s;
 	box-shadow: var(--mdui-elevation-level1);
+	margin-bottom: 1rem;
 
 	&:hover {
 		box-shadow: var(--mdui-elevation-level4);
@@ -261,9 +260,5 @@ mdui-card {
 			height: 103%;
 		}
 	}
-}
-
-section {
-	margin-bottom: 1rem;
 }
 </style>
