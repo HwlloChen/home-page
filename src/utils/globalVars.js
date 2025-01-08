@@ -35,7 +35,7 @@ const globalVars = reactive({
         backpoint_v6: "https://www.chenserver.top:81",
     },
     artalk: {
-        enable: false,
+        enable: true,
         server: "https://artalk.chenserver.top",
         site: "ChenServer主站",
         pageTitle: "ChenServer",
