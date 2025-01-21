@@ -39,8 +39,8 @@ const getIP = () => {
                         info.value = `ChenServer服务异常！`
                         $('#ipchip').removeAttr('loading')
                         $('#ipchip').attr('icon', 'warning')
-                        tip.value = "看来是ChenServer的IPv6部分出现了问题呢  您可以及时反馈问题给我们(hwllochen@qq.com)"
-                        $('#ipchip').attr("href", "mailto:hwllochen@qq.com")
+                        tip.value = `看来是${globalVars.site.name}的IPv6部分出现了问题呢  您可以及时反馈问题给我们(${globalVars.author.email})`
+                        $('#ipchip').attr("href", `mailto:${globalVars.author.email}`)
                         hasV6.value = true;
                     } else {
                         console.warn("noIPv6")

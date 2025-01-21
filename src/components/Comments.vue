@@ -51,7 +51,6 @@ artalk = undefined;
     min-height: 250px;
     height: auto;
     position: relative;
-    transition: box-shadow .3s;
 
     .glass & {
         box-shadow: var(--mdui-elevation-level1);
