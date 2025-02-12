@@ -6,6 +6,7 @@
 import { snackbar, dialog } from 'mdui';
 import { MD5 } from "crypto-js";
 import { globalVars } from './globalVars';
+import { marked } from 'marked';
 
 localStorage.getItem("readedAnnouncements") == null ? localStorage.setItem("readedAnnouncements", "[]") : null
 let readedList = JSON.parse(localStorage.getItem("readedAnnouncements"))
@@ -51,8 +52,9 @@ function showAnnouncements() {
                     const dialogBody = document.createElement('div')
 
                     const contentDiv = document.createElement('div');
-                    contentDiv.textContent = a.content
-                    contentDiv.style = "margin-bottom: 10px; margin: 1rem 0;"
+                    
+                    contentDiv.innerHTML = marked.parse(a.content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/,""))
+                    contentDiv.style = "margin-bottom: 10px; margin: 1rem 0; width: 100%; height: auto; overflow-x: hidden;"
 
                     const publisherDiv = document.createElement('div');
                     publisherDiv.innerHTML = `发布者：${a.publisher} <br>${new Date(a.publishTime).toLocaleString()}`;
