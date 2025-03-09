@@ -39,6 +39,19 @@ onMounted(() => {
 						</div>
 						<Services />
 					</section>
+				</main>
+				<div id="side">
+					<section v-if="globalVars.artalk.enable">
+						<div class="section-title" data-aos="fade-right">
+							<mdui-icon name="sentiment_very_satisfied"></mdui-icon>
+							<div class="section-title-text">
+								<span class="chinese ">关于我</span>
+								<span class="english ubuntu-light-italic">Comments</span>
+							</div>
+						</div>
+						<AboutMe />
+					</section>
+
 					<section v-if="globalVars.artalk.enable">
 						<div class="section-title" data-aos="fade-right">
 							<mdui-icon name="comment"></mdui-icon>
@@ -49,9 +62,6 @@ onMounted(() => {
 						</div>
 						<Comments />
 					</section>
-				</main>
-				<div id="side" v-if="false">
-					<AboutMe />
 				</div>
 			</div>
 		</mdui-layout-main>
@@ -65,8 +75,8 @@ onMounted(() => {
 @max-width: 1080px;
 @content-width-large: 75%;
 @side-width-large: 25%;
-@margin-side: 20px;
-@padding-main: 15px;
+@margin-side: 1.5rem;
+@padding-main: 1.5rem;
 @max-main-width: 1500px;
 
 .main {
@@ -89,17 +99,24 @@ onMounted(() => {
 	@media (min-width: (@max-width + 1)) {
 		#content {
 			width: @content-width-large;
-			margin-right: @margin-side;
 		}
 
 		#side {
 			width: @side-width-large;
+			margin-left: @margin-side;
+			min-width: 300px;
+
+			.section-title {
+				font-size: 1.5rem;
+				margin-bottom: 0.75rem;
+			}
 		}
 	}
 
 	/* 当屏幕宽度小于等于1080px时 */
 	@media (max-width: @max-width) {
 		flex-direction: column;
+		padding: 0 .75rem;
 
 		#content,
 		#side {
@@ -114,10 +131,6 @@ mdui-layout {
 	box-sizing: border-box;
 	flex-direction: column;
 	min-height: 100vh;
-}
-
-mdui-layout-main {
-	flex: 1;
 }
 
 .section-title {
@@ -148,6 +161,7 @@ mdui-layout-main {
 		font-size: 1.5rem;
 		margin-left: 0;
 	}
+
 	@media(min-width: 1081px) {
 		font-size: 1.75rem;
 		margin-left: -1rem;

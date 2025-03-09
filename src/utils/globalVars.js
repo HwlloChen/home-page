@@ -26,7 +26,11 @@ const globalVars = reactive({
     },
     author: {
         name: "Chen",
-        email: "hwllochen@qq.com"
+        description: "一个普通的学生",
+        email: "hwllochen@qq.com",
+        avatar: "https://cravatar.cn/avatar/f9ff0db2d48c61f21a01f31de18643c2?d=mp&s=240",
+        github: "HwlloChen",
+        qq: 3417591076
     },
     site: {
         name: "ChenServer",

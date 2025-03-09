@@ -95,7 +95,7 @@ mdui-card {
 	width: 100%;
 	height: 300px;
 	position: relative;
-	transition: box-shadow .3s;
+	transition: box-shadow .2s !important;
 	box-shadow: var(--mdui-elevation-level1);
 	margin-bottom: 1rem;
 
@@ -210,6 +210,18 @@ mdui-card {
 
 			@media(min-width: 601px) {
 				font-size: var(--mdui-typescale-body-medium-size);
+			}
+		}
+
+		.go-button {
+			transition: box-shadow 0.3s var(--mdui-motion-easing-standard);
+
+			&:hover {
+				box-shadow: var(--mdui-elevation-level2);
+			}
+
+			&:active {
+				box-shadow: var(--mdui-elevation-level5);
 			}
 		}
 	}
