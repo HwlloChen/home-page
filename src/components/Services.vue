@@ -95,7 +95,7 @@ mdui-card {
 	width: 100%;
 	height: 300px;
 	position: relative;
-	transition: box-shadow .2s !important;
+	transition: all .3s var(--mdui-motion-easing-standard) !important;
 	box-shadow: var(--mdui-elevation-level1);
 	margin-bottom: 1rem;
 
