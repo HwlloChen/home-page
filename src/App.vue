@@ -46,7 +46,7 @@ onMounted(() => {
 							<mdui-icon name="sentiment_very_satisfied"></mdui-icon>
 							<div class="section-title-text">
 								<span class="chinese ">关于我</span>
-								<span class="english ubuntu-light-italic">Comments</span>
+								<span class="english ubuntu-light-italic">About Me</span>
 							</div>
 						</div>
 						<AboutMe />
