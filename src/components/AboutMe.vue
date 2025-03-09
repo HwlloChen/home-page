@@ -37,7 +37,7 @@ import { globalVars } from "@/utils/globalVars";
           <mdui-tooltip :content="`QQ`" placement="top-start">
             <mdui-button-icon
               v-if="globalVars.author.qq"
-              :href="`http://wpa.qq.com/msgrd?v=3&uin=${String(globalVars.author.qq)}&site=qq&menu=yes`"
+              :href="`tencent://message/?uin=${String(globalVars.author.qq)}&Site=&Menu=yes`"
               target="_blank"
               icon="chat"
               variant="tonal"
