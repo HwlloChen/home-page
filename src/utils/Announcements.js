@@ -11,6 +11,34 @@ import { marked } from 'marked';
 localStorage.getItem("readedAnnouncements") == null ? localStorage.setItem("readedAnnouncements", "[]") : null
 let readedList = JSON.parse(localStorage.getItem("readedAnnouncements"))
 
+/**
+ * Displays announcements based on their importance levels (1-3).
+ * Shows announcements using different UI components based on importance:
+ * - Level 1: Simple snackbar notification
+ * - Level 2: Snackbar with "Don't show again" option
+ * - Level 3: Modal dialog with markdown support
+ * 
+ * Announcements older than 21 days are not displayed.
+ * Previously acknowledged important announcements (level 2-3) are tracked in localStorage.
+ * 
+ * 根据重要性级别（1-3）显示公告。
+ * 基于重要性使用不同的UI组件显示公告：
+ * - 级别1：简单的snackbar通知
+ * - 级别2：带有"不再显示"选项的snackbar
+ * - 级别3：支持markdown的模态对话框
+ * 
+ * 超过21天的公告将不再显示。
+ * 已确认的重要公告（级别2-3）会在localStorage中进行追踪。
+ * 
+ * @function
+ * @name showAnnouncements
+ * @global
+ * @requires globalVars.announcements
+ * @requires snackbar
+ * @requires dialog
+ * @requires marked
+ * @requires MD5
+ */
 function showAnnouncements() {
     // 按照优先级先后显示1~3级别的公告
     const l = globalVars.announcements.length

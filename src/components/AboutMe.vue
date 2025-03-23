@@ -5,43 +5,26 @@ import { globalVars } from "@/utils/globalVars";
 <template>
   <!--About Me关于页面-->
   <address>
-    <mdui-card id="about-me">
+    <mdui-card id="about-me" data-aos="zoom-in" data-aos-anchor-placement="top-bottom">
       <div class="avatar-container">
-        <img
-          :src="globalVars.author.avatar"
-          :alt="globalVars.author.name"
-          class="avatar"
-        />
+        <img :src="globalVars.author.avatar" :alt="globalVars.author.name" class="avatar" />
       </div>
       <div class="info-container">
         <div class="name">{{ globalVars.author.name }}</div>
         <div class="description">{{ globalVars.author.description }}</div>
         <div class="contact">
           <mdui-tooltip :content="`邮箱`" placement="top-start">
-            <mdui-button-icon
-              v-if="globalVars.author.email"
-              :href="'mailto:' + globalVars.author.email"
-              icon="mail"
-              variant="tonal"
-            ></mdui-button-icon>
+            <mdui-button-icon v-if="globalVars.author.email" :href="'mailto:' + globalVars.author.email" icon="mail"
+              variant="tonal"></mdui-button-icon>
           </mdui-tooltip>
           <mdui-tooltip :content="`Github`" placement="top-start">
-            <mdui-button-icon
-              v-if="globalVars.author.github"
-              :href="'https://github.com/' + globalVars.author.github"
-              target="_blank"
-              icon="code"
-              variant="tonal"
-            ></mdui-button-icon>
+            <mdui-button-icon v-if="globalVars.author.github" :href="'https://github.com/' + globalVars.author.github"
+              target="_blank" icon="code" variant="tonal"></mdui-button-icon>
           </mdui-tooltip>
           <mdui-tooltip :content="`QQ`" placement="top-start">
-            <mdui-button-icon
-              v-if="globalVars.author.qq"
-              :href="`tencent://message/?uin=${String(globalVars.author.qq)}&Site=&Menu=yes`"
-              target="_blank"
-              icon="chat"
-              variant="tonal"
-            ></mdui-button-icon>
+            <mdui-button-icon v-if="globalVars.author.qq"
+              :href="`tencent://message/?uin=${String(globalVars.author.qq)}&Site=&Menu=yes`" target="_blank"
+              icon="chat" variant="tonal"></mdui-button-icon>
           </mdui-tooltip>
         </div>
       </div>

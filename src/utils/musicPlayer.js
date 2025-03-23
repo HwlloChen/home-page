@@ -2,6 +2,24 @@ import { ref } from "vue";
 import { globalVars } from "./globalVars";
 const navidrome = globalVars.navidrome
 
+/**
+ * 音乐播放器类，用于管理音频播放、播放列表和播放状态
+ * Music player class for managing audio playback, playlists, and playback states
+ * 
+ * @class MusicPlayer
+ * @property {Array} playlist - 播放列表数组 / Array of songs in the playlist
+ * @property {number} currentTrackIndex - 当前播放歌曲的索引 / Index of the current playing track
+ * @property {HTMLAudioElement} audio - 音频元素 / Audio element for playback
+ * @property {Array} lastTracks - 用于随机播放模式下记录播放历史的数组 / Array for storing playback history in random mode
+ * @property {boolean} playlistLoaded - 播放列表是否已加载 / Flag indicating if playlist is loaded
+ * @property {Object} playingMusic - 当前播放音乐的信息 / Current playing music information
+ * @property {number} playbackMode - 播放模式 (0: 顺序播放, 1: 随机播放, -1: 单曲循环) / Playback mode (0: sequential, 1: random, -1: single repeat)
+ * 
+ * @example
+ * const player = new MusicPlayer();
+ * player.init(audioElement);
+ * player.loadPlaylist(songs);
+ */
 class MusicPlayer {
     constructor() {
 

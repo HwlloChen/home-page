@@ -1,5 +1,42 @@
 import { reactive } from "vue";
 
+/**
+ * Global reactive variables for the application
+ * 应用程序的全局响应式变量
+ * @typedef {Object} GlobalVars
+ * @property {Object} navidrome - Navidrome music server configuration / Navidrome音乐服务器配置
+ * @property {boolean} navidrome.enable - Enable/disable Navidrome integration / 启用/禁用 Navidrome 集成
+ * @property {string} navidrome.server - Navidrome server URL / Navidrome 服务器地址
+ * @property {string} navidrome.playListURL - URL path for playlist with sorting parameters / 播放列表URL路径及排序参数
+ * @property {string} navidrome.clientName - Client name for Navidrome / Navidrome 客户端名称
+ * @property {string} navidrome.user - Username for Navidrome authentication / Navidrome 用户名
+ * @property {string} navidrome.password - Password for Navidrome authentication / Navidrome 密码
+ * @property {boolean} navidrome.ipv6 - Enable/disable IPv6 support / 启用/禁用 IPv6 支持
+ * @property {Object} navidrome.login - Login status / 登录状态
+ * @property {Object} theme - Theme configuration / 主题配置
+ * @property {string} theme.light - Theme mode ('dark' or 'light') / 主题模式（'dark'或'light'）
+ * @property {string} theme.color - Theme color in hex / 主题颜色（十六进制）
+ * @property {string} theme.bgImage - Background image URL / 背景图片地址
+ * @property {boolean} theme.useGlass - Enable/disable glass effect based on screen width / 基于屏幕宽度启用/禁用毛玻璃效果
+ * @property {Object} author - Author information / 作者信息
+ * @property {string} author.name - Author's name / 作者昵称
+ * @property {string} author.description - Author's description / 座右铭
+ * @property {string} author.email - Author's email / 作者邮箱
+ * @property {string} author.avatar - Author's avatar URL / 作者头像地址
+ * @property {string} author.github - Author's GitHub username / 作者GitHub用户名
+ * @property {number} author.qq - Author's QQ number / 作者QQ号
+ * @property {Object} site - Website configuration / 网站配置
+ * @property {string} site.name - Website name / 网站名称
+ * @property {string} site.created_date - Website creation date in ISO8601 format / 网站创建日期（ISO8601格式）
+ * @property {string} site.backpoint - API endpoint URL / API接口地址
+ * @property {string} site.backpoint_v6 - IPv6 API endpoint URL / IPv6 API接口地址
+ * @property {Object} artalk - Artalk comment system configuration / Artalk评论系统配置
+ * @property {boolean} artalk.enable - Enable/disable Artalk / 启用/禁用Artalk
+ * @property {string} artalk.server - Artalk server URL / Artalk服务器地址
+ * @property {string} artalk.site - Artalk site name / Artalk站点名称
+ * @property {string} artalk.pageTitle - Artalk page title / Artalk页面标题
+ */
+
 const globalVars = reactive({
     navidrome: { // 此处配置应在后期迁移至后端服务器获取（可能是直接得到cookie）
         enable: true,
