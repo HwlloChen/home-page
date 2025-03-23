@@ -9,8 +9,7 @@ bg = "https://chenserver.top/dl/pic.png"
 
 <template>
 	<template v-for="site in sites">
-		<mdui-card variant="elevated" :class="site.cover ? 'bg' : 'text'" data-aos="zoom-in"
-			data-aos-anchor-placement="top-bottom"
+		<mdui-card variant="elevated" :class="site.cover ? 'bg' : 'text'" data-aos="fade-right"
 			:style="`--bg-url: url(${site.cover ? site.cover : ''}); --site-title: '${addEscapeToQuotes(site.title)}'`">
 			<div class="info">
 				<div class="primary">
@@ -40,7 +39,18 @@ const sites = ref([])
 
 fetch(`${globalVars.site.backpoint}/sites`).then(response => response.json())
 	.then(data => {
-		sites.value = data
+		if (window.scrollY > 300) {
+			// 滚动超过300px时直接显示
+			sites.value = data;
+		} else {
+			// 逐个显示，动画效果好一点
+			sites.value = [];
+			data.forEach((site, index) => {
+				setTimeout(() => {
+					sites.value.push(site);
+				}, index * 100);
+			});
+		}
 	}).catch(e => {
 		//使用硬编码值
 		sites.value = [
@@ -95,7 +105,7 @@ mdui-card {
 	width: 100%;
 	height: 300px;
 	position: relative;
-	transition: all .3s var(--mdui-motion-easing-standard) !important;
+	transition: all .5s var(--mdui-motion-easing-standard) !important;
 	box-shadow: var(--mdui-elevation-level1);
 	margin-bottom: 1rem;
 

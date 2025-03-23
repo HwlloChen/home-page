@@ -5,7 +5,7 @@ import { globalVars } from "@/utils/globalVars";
 <template>
   <!--About Me关于页面-->
   <address>
-    <mdui-card id="about-me" data-aos="zoom-in" data-aos-anchor-placement="top-bottom">
+    <mdui-card id="about-me" data-aos="zoom-in">
       <div class="avatar-container">
         <img :src="globalVars.author.avatar" :alt="globalVars.author.name" class="avatar" />
       </div>
