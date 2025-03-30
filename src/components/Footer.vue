@@ -24,7 +24,7 @@ onBeforeMount(() => {
 <template>
     <footer>
         <div class="footer-music left">
-            <template v-if="hasV6">
+            <template v-if="hasV6 && globalVars.navidrome.enable">
                 <img class="playing-music-cover" :src="player.playingMusic.value.cover" @click="opendrawer">
                 <div class="footer-music-info">
                     <b>{{ player.playingMusic.value.title }}</b>
@@ -40,7 +40,7 @@ onBeforeMount(() => {
             <p v-if="dateFlag">本站已持续运行{{ refDate }}</p>
             <p><a href="https://icp.gov.moe/?keyword=20244114" target="_blank">萌ICP备20244114号</a></p>
             <p>Powered by <a href="https://gitee.com/HwlloChen/home-page" target="_blank">ChenServer v{{ config.version
-                    }}</a></p>
+            }}</a></p>
         </div>
         <div class="right moeicp">
             <a href="https://icp.gov.moe/?keyword=20244114" target="_blank"><img src="/src/assets/moe_ico64.png"></a>

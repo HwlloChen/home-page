@@ -67,47 +67,47 @@ onBeforeMount(async () => {
         // 确保 localStorage 存在且有效
         const navidrome = localStorage.getItem("navidrome");
         const token = navidrome ? JSON.parse(navidrome)?.token : null;
-        
+
         if (!token) {
             // 没有token,执行登录流程
             await updateToken();
         }
-        
+
         // 设置请求头
         headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
         headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
-        
+
         // 验证token是否有效
         await keepAlive();
-        
+
         // 获取音乐列表
         await getMusicList();
-        
+
         // 加载播放列表
         player.loadPlaylist(music_list.value);
-        
+
         available.value = true;
-        
+
     } catch (e) {
         console.warn("Music initialization error:", e);
-        
+
         // 尝试重新获取token
         try {
             await updateToken();
             headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
             headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
-            
+
             await keepAlive();
             await getMusicList();
             player.loadPlaylist(music_list.value);
-            
+
             available.value = true;
         } catch (retryError) {
             console.error("Music initialization failed after retry:", retryError);
             available.value = false;
-            snackbar({ 
+            snackbar({
                 message: "无法连接到音乐服务器，请稍后重试",
-                autoCloseDelay: 3000 
+                autoCloseDelay: 3000
             });
         }
     }
@@ -156,19 +156,19 @@ async function updateToken() {
     });
 
     if (!response.ok) {
-        throw new Error(response.status === 401 ? 
-            "Navidrome用户名或密码错误" : 
+        throw new Error(response.status === 401 ?
+            "Navidrome用户名或密码错误" :
             "连接Navidrome服务器失败"
         );
     }
 
     const data = await response.json();
     localStorage.setItem("navidrome", JSON.stringify(data));
-    
+
     if (data.isAdmin) {
         console.warn("请避免使用管理员Navidrome账户");
     }
-    
+
     return data;
 }
 

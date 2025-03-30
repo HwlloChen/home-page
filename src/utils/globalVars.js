@@ -20,7 +20,7 @@ import { reactive } from "vue";
  * @property {boolean} theme.useGlass - Enable/disable glass effect based on screen width / 基于屏幕宽度启用/禁用毛玻璃效果
  * @property {Object} author - Author information / 作者信息
  * @property {string} author.name - Author's name / 作者昵称
- * @property {string} author.description - Author's description / 座右铭
+ * @property {string} author.description - Author's description with jumping text (format: %text1|text2|text3%) / 作者描述（支持跳动文字，格式：%文字1|文字2|文字3%）
  * @property {string} author.email - Author's email / 作者邮箱
  * @property {string} author.avatar - Author's avatar URL / 作者头像地址
  * @property {string} author.github - Author's GitHub username / 作者GitHub用户名
@@ -48,7 +48,7 @@ const globalVars = reactive({
          *          /api/playlist/{歌单id}/tracks 使用歌单
          *          /api/song?_sort=album&album_id={专辑id} 使用特定专辑(注意后方参数)
          */
-        playListURL: "/api/song" + "?&_order=DESC&_sort=createdAt",
+        playListURL: "/api/song" + "?_order=DESC&_sort=rating",
         clientName: "ChenServer",
         user: "user", // 此处不应使用高权限用户
         password: "pwd",
@@ -63,7 +63,7 @@ const globalVars = reactive({
     },
     author: {
         name: "Chen",
-        description: "一个普通的学生",
+        description: "一个%普通|不平凡|不甘现状|善于使用AI|热爱二次元文化|抽卡不歪|不怎么刷题|总想早睡却总忘记早睡|伟大|努力学习|坍缩了|善于思考%的%学生|开发者|梦想家|开源爱好者|耳机党|游戏玩家|Linux用户|刀客塔|人类|发明家%",
         email: "hwllochen@qq.com",
         avatar: "https://cravatar.cn/avatar/f9ff0db2d48c61f21a01f31de18643c2?d=mp&s=240",
         github: "HwlloChen",

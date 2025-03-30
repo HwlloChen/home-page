@@ -10,6 +10,7 @@ bg = "https://chenserver.top/dl/pic.png"
 <template>
 	<template v-for="site in sites">
 		<mdui-card variant="elevated" :class="site.cover ? 'bg' : 'text'" data-aos="fade-right"
+			data-aos-anchor-placement="top-bottom" data-aos-offset="40"
 			:style="`--bg-url: url(${site.cover ? site.cover : ''}); --site-title: '${addEscapeToQuotes(site.title)}'`">
 			<div class="info">
 				<div class="primary">

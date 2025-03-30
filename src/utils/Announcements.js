@@ -80,8 +80,8 @@ function showAnnouncements() {
                     const dialogBody = document.createElement('div')
 
                     const contentDiv = document.createElement('div');
-                    
-                    contentDiv.innerHTML = marked.parse(a.content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/,""))
+
+                    contentDiv.innerHTML = marked.parse(a.content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""))
                     contentDiv.style = "margin-bottom: 10px; margin: 1rem 0; width: 100%; height: auto; overflow-x: hidden;"
 
                     const publisherDiv = document.createElement('div');
