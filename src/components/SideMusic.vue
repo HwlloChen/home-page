@@ -29,8 +29,8 @@
                     <mdui-button-icon variant="tonal" @click="player.negative()"
                         :icon="player.playingMusic.value.pause ? 'play_arrow' : 'pause'"></mdui-button-icon>
                     <mdui-button-icon variant="tonal" icon="skip_next" @click="player.nextTrack()"></mdui-button-icon>
-                    <mdui-button-icon variant="standard" icon="share--outlined" style="width: 2.5rem; height: 2.5rem;"
-                        @click="snackbar({ message: '敬请期待' })"></mdui-button-icon>
+                    <mdui-button-icon variant="standard" id="shareButton" icon="share--outlined"
+                        style="width: 2.5rem; height: 2.5rem;" @click="shareMusic"></mdui-button-icon>
                 </div>
             </div>
         </div>
@@ -39,6 +39,7 @@
                 <mdui-list-item :description="`${music.artist}`" :data-index="index"
                     :="{ active: player.playingMusic.value.index === index }" rounded>
                     {{ music.title }}
+                    <mdui-badge v-if="music.isShared">推荐音乐</mdui-badge>
                     <mdui-avatar slot="icon">
                         <img class="lazy"
                             :src="`${globalVars.navidrome.server}/rest/getCoverArt?u=${globalVars.navidrome.user}&t=${globalVars.navidrome.login.subsonicToken}&s=${globalVars.navidrome.login.subsonicSalt}&f=json&v=1.8.0&c=${globalVars.navidrome.clientName}&id=al-${music.albumId}&size=96`"
@@ -58,8 +59,12 @@
 <script setup>
 import { globalVars } from '@/utils/globalVars';
 import { MusicPlayer } from '@/utils/musicPlayer';
-import { snackbar } from 'mdui';
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { prompt, snackbar } from 'mdui';
+import { onBeforeMount, onMounted, ref, nextTick, inject } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+
+const router = useRouter();
+const route = useRoute();
 
 onBeforeMount(async () => {
     // 初始化音乐组件
@@ -128,9 +133,158 @@ onMounted(() => {
     player.init(audio)
 })
 
+// 监听处理分享音乐事件
+window.addEventListener('handle-shared-music', async (event) => {
+    const musicData = event.detail;
+
+    // 检查 token 和播放列表是否已加载
+    if (!player.playlistLoaded) {
+        try {
+            await updateToken();
+            headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
+            headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
+            await keepAlive();
+            await getMusicList();
+            player.loadPlaylist(music_list.value);
+        } catch (error) {
+            console.error('初始化音乐播放器失败:', error);
+            snackbar({
+                message: "无法连接到音乐服务器，请稍后重试",
+                autoCloseDelay: 3000
+            });
+            return;
+        }
+    }
+
+    // 查找音乐是否在当前播放列表中
+    const musicIndex = music_list.value.findIndex(music =>
+        music.id === musicData.trackId &&
+        music.albumId === musicData.albumId
+    );
+
+    // 清空已有标记
+    music_list.value.forEach(music => {
+        music.isShared = false;
+    });
+
+    if (musicIndex !== -1) {
+        // 如果在列表中，添加标记并播放
+        music_list.value[musicIndex].isShared = true;
+        player.loadTrack(musicIndex);
+    } else {
+        // 如果不在列表中，添加到播放列表并播放
+        const newMusic = {
+            id: musicData.trackId,
+            realId: musicData.trackId,
+            albumId: musicData.albumId,
+            title: musicData.title,
+            artist: musicData.artist,
+            isShared: true
+        };
+        music_list.value.push(newMusic);
+        player.loadPlaylist(music_list.value);
+        player.loadTrack(music_list.value.length - 1);
+    }
+
+    player.playbackMode.value = -1; // 设置为单曲循环
+});
+
 const setMusic = (index) => {
     player.loadTrack(index)
     player.play()
+}
+
+async function shareMusic() {
+    const shareButton = document.getElementById("shareButton");
+    if (!player.playingMusic.value) {
+        snackbar({
+            message: "请先播放一首音乐",
+            autoCloseDelay: 3000
+        });
+        return;
+    }
+
+    try {
+        const currentTrack = player.playlist[player.currentTrackIndex];
+        var comment = currentTrack.comment ? currentTrack.comment : ""
+
+        prompt({
+            headline: `分享音乐 ${currentTrack.title}`,
+            description: "请对分享进行留言",
+            confirmText: "分享",
+            cancelText: "取消",
+            onOpen: function () {
+                // 设置默认值
+                const inputField = this.querySelector('mdui-text-field')
+                inputField.setAttribute("autosize", "true")
+                inputField.value = comment;
+            },
+            onConfirm: async (v) => {
+                try {
+                    shareButton.loading = true;
+                    comment = v
+                    const shareData = {
+                        title: currentTrack.title,
+                        artist: currentTrack.artist,
+                        albumId: currentTrack.albumId,
+                        trackId: currentTrack.realId,
+                        serverUrl: globalVars.navidrome.server,
+                        comment: comment,
+                    };
+
+                    const response = await fetch(`${globalVars.site.backpoint}/music/share`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(shareData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('分享失败');
+                    }
+
+                    const result = await response.json();
+                    const shareUrl = `/music/share/${result.id}`;
+
+                    // 复制分享链接到剪贴板
+                    const fullUrl = window.location.origin + shareUrl;
+                    await navigator.clipboard.writeText(fullUrl);
+                    // 使用 router 进行导航并等待导航完成
+                    await router.push(shareUrl);
+                    await nextTick();
+
+                    // 获取当前路由组件实例
+                    const currentInstance = router.currentRoute.value.matched[0].instances.default;
+                    if (currentInstance?.initializeSharePage) {
+                        await currentInstance.initializeSharePage();
+                    }
+
+                    // 显示提示消息
+                    setTimeout(() => {
+                        snackbar({
+                            message: "分享链接已复制到剪贴板",
+                            autoCloseDelay: 3000
+                        });
+
+                        setTimeout(() => {
+                            // 关闭音乐抽屉
+                            drawer.open = false
+                        }, 300);
+                    }, 200);
+                } finally {
+                    shareButton.loading = false;
+                }
+            }
+        });
+    } catch (error) {
+        console.error('分享失败:', error);
+        shareButton.loading = false;
+        snackbar({
+            message: "分享失败，请稍后重试",
+            autoCloseDelay: 3000
+        });
+    }
 }
 </script>
 
@@ -138,11 +292,11 @@ const setMusic = (index) => {
 var drawer
 export const available = ref(true)
 export const player = new MusicPlayer()
-const headers = {
+export const headers = {
     "x-nd-authorization": null,
     "x-nd-client-unique-id": null
 }
-const music_list = ref([])
+export const music_list = ref([])
 export const loading = ref(true)
 var firstflag = true
 

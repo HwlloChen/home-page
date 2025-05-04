@@ -23,12 +23,14 @@ function initArtalk() {
 }
 
 onMounted(() => {
-    initArtalk().then(() => {
-        console.log("Artalk initialized.");
-    }).catch(e => {
-        console.error("Artalk initialization failed.");
-        globalVars.artalk.enable = false; // Disable Artalk if initialization failed
-    });
+    setTimeout(() => {
+        initArtalk().then(() => {
+            console.log("Artalk initialized.");
+        }).catch(e => {
+            console.error("Artalk initialization failed.");
+            globalVars.artalk.enable = false; // Disable Artalk if initialization failed
+        });
+    }, 100);
 });
 
 </script>

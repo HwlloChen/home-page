@@ -22,7 +22,7 @@ const navidrome = globalVars.navidrome
  */
 class MusicPlayer {
     constructor() {
-
+        this.isSharePage = window.location.pathname.startsWith('/music/share/');
     }
 
     init(audioElement) {
@@ -40,26 +40,34 @@ class MusicPlayer {
     // 加载播放列表
     loadPlaylist(songs) {
         this.playlist = songs;
-        for (var i = 0; i < this.playlist.length; i++) this.playlist[i].realId = "mediaFileId" in this.playlist[i] ? this.playlist[i].mediaFileId : this.playlist[i].id // 规避不同歌单返回id不同问题
-        // 尝试恢复原有状态
-        if (localStorage.getItem("lastmusic") != null) {
-            const storage = JSON.parse(localStorage.getItem("lastmusic"))
-            var flag = false
-            this.playbackMode.value = storage.playbackMode
+        for (var i = 0; i < this.playlist.length; i++) {
+            this.playlist[i].realId = "mediaFileId" in this.playlist[i] ? this.playlist[i].mediaFileId : this.playlist[i].id;
+        }
+
+        // 在分享页面不需要保存播放状态
+        if (!this.isSharePage && localStorage.getItem("lastmusic") != null) {
+            const storage = JSON.parse(localStorage.getItem("lastmusic"));
+            var flag = false;
+            this.playbackMode.value = storage.playbackMode;
+            
             // 查找歌曲是否仍然存在
             for (const [index, music] of this.playlist.entries()) {
                 if (music.realId === storage.id) {
-                    flag = true
-                    this.loadTrack(index)
-                    this.changeNowTime(storage.time)
-                    this.pause()
+                    flag = true;
+                    this.loadTrack(index);
+                    this.changeNowTime(storage.time);
+                    this.pause();
                     break;
                 }
             }
-            if (!flag) this.loadTrack(0)
-            else this.lastTracks = storage.lastTracks
+            if (!flag) {
+                this.loadTrack(0);
+            } else {
+                this.lastTracks = storage.lastTracks;
+            }
+        } else {
+            this.loadTrack(0);
         }
-        else this.loadTrack(0);
         this.playlistLoaded = true;
     }
 
@@ -74,26 +82,30 @@ class MusicPlayer {
     updateNowTime() {
         const nowTime = this.audio.currentTime;
         this.playingMusic.value.nowTime = Math.floor(nowTime);
-        this.playingMusic.value.nowTimeString = this.formatTime(nowTime)
+        this.playingMusic.value.nowTimeString = this.formatTime(nowTime);
 
-        // 更新播放进度
-        localStorage.setItem("lastmusic", JSON.stringify({
-            id: this.track.realId,
-            time: nowTime,
-            playbackMode: this.playbackMode.value,
-            lastTracks: this.lastTracks,
-        }))
+        // 在分享页面不需要保存播放进度
+        if (!this.isSharePage) {
+            localStorage.setItem("lastmusic", JSON.stringify({
+                id: this.track.realId,
+                time: nowTime,
+                playbackMode: this.playbackMode.value,
+                lastTracks: this.lastTracks,
+            }));
+        }
     }
+
     changeNowTime(nowTime) {
-        this.audio.currentTime = nowTime
+        this.audio.currentTime = nowTime;
     }
+
     updateDuration() {
         const duration = this.audio.duration;
-        this.playingMusic.value.maxTime = Math.floor(duration); // 设置滑动条的最大值为音频总时长
+        this.playingMusic.value.maxTime = Math.floor(duration);
         this.playingMusic.value.maxTimeString = this.formatTime(duration);
     }
 
-    // 获取 Subsonic 音频流 URL 和 专辑图
+    // 获取 Subsonic 音频流 URL
     async getSubsonicStreamUrl(trackId) {
         const { server, user, login, clientName } = navidrome;
         const streamUrl = `${server}/rest/stream?u=${user}&t=${login.subsonicToken}&s=${login.subsonicSalt}&f=json&v=1.8.0&c=${clientName}&id=${trackId}&_=${new Date().getTime()}`;
@@ -105,24 +117,35 @@ class MusicPlayer {
         this.currentTrackIndex = index;
         this.track = this.playlist[index];
         const { server, user, login, clientName } = navidrome;
-        this.playingMusic.value.cover = `${server}/rest/getCoverArt?u=${user}&t=${login.subsonicToken}&s=${login.subsonicSalt}&f=json&v=1.8.0&c=${clientName}&id=al-${this.track.albumId}&size=2048`
-        this.playingMusic.value.title = this.track.title
-        this.playingMusic.value.information = `${this.track.artist} - ${this.track.album}`
-        this.playingMusic.value.index = index
+        this.playingMusic.value.cover = `${server}/rest/getCoverArt?u=${user}&t=${login.subsonicToken}&s=${login.subsonicSalt}&f=json&v=1.8.0&c=${clientName}&id=al-${this.track.albumId}&size=2048`;
+        this.playingMusic.value.title = this.track.title;
+        this.playingMusic.value.information = `${this.track.artist} - ${this.track.album}`;
+        this.playingMusic.value.index = index;
+        this.playingMusic.value.trackId = this.track.realId;
 
         // 获取音频流的 URL
         const streamUrl = await this.getSubsonicStreamUrl(this.track.realId);
         this.audio.src = streamUrl;
         this.audio.load();
 
-        // 更新相关组件
+        // 更新 MediaSession
         this.updateMediaSession(this.track);
 
-        setTimeout(() => {
-            // 平滑滚动到指定元素
-            const targets = document.querySelector(".music-list").children;
-            targets[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 200);
+        // 广播播放更新
+        window.dispatchEvent(new CustomEvent('playing-music-changed'))
+
+        // 只在非分享页面且存在播放列表时执行滚动
+        if (!this.isSharePage) {
+            setTimeout(() => {
+                const musicList = document.querySelector(".music-list");
+                if (musicList && musicList.children[index]) {
+                    musicList.children[index].scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }, 200);
+        }
     }
 
     play() {
@@ -148,56 +171,64 @@ class MusicPlayer {
     }
 
     nextTrack() {
-        switch (this.playbackMode.value) {
-            case 0:
-                if (this.currentTrackIndex < this.playlist.length - 1) {
-                    this.loadTrack(this.currentTrackIndex + 1); // 取下一首
-                }
-                break;
-
-            case 1:
-                if (this.lastTracks.length > 128) this.lastTracks.shift()
-                this.lastTracks.push(this.currentTrackIndex)
-                const randomTrack = Math.floor(Math.random() * (this.playlist.length)) // 取一个0～max-1之间的随机整数
-                this.loadTrack(randomTrack)
-                break;
-
-            case -1:
-                this.loadTrack(this.currentTrackIndex); // 取本首
-                break;
-
-            default:
-                if (this.currentTrackIndex < this.playlist.length - 1) {
-                    this.loadTrack(this.currentTrackIndex + 1);
-                }
-                break;
+        if (this.isSharePage) {
+            // 在分享页面，单曲循环
+            this.loadTrack(0);
+        } else {
+            switch (this.playbackMode.value) {
+                case 0:
+                    if (this.currentTrackIndex < this.playlist.length - 1) {
+                        this.loadTrack(this.currentTrackIndex + 1);
+                    }
+                    break;
+                case 1:
+                    if (this.lastTracks.length > 128) this.lastTracks.shift();
+                    this.lastTracks.push(this.currentTrackIndex);
+                    const randomTrack = Math.floor(Math.random() * (this.playlist.length));
+                    this.loadTrack(randomTrack);
+                    break;
+                case -1:
+                    this.loadTrack(this.currentTrackIndex);
+                    break;
+                default:
+                    if (this.currentTrackIndex < this.playlist.length - 1) {
+                        this.loadTrack(this.currentTrackIndex + 1);
+                    }
+                    break;
+            }
         }
         this.play();
     }
 
     prevTrack() {
-        switch (this.playbackMode.value) {
-            case 0:
-                if (this.currentTrackIndex > 0) {
-                    this.loadTrack(this.currentTrackIndex - 1); // 取上一首
-                }
-                break;
-
-            case 1:
-                const lastTrack = this.lastTracks.pop()
-                if (lastTrack === undefined) { this.nextTrack(); return; }
-                else this.loadTrack(lastTrack)
-                break;
-
-            case -1:
-                this.loadTrack(this.currentTrackIndex); // 取本首
-                break;
-
-            default:
-                if (this.currentTrackIndex > 0) {
-                    this.loadTrack(this.currentTrackIndex - 1);
-                }
-                break;
+        if (this.isSharePage) {
+            // 在分享页面，单曲循环
+            this.loadTrack(0);
+        } else {
+            switch (this.playbackMode.value) {
+                case 0:
+                    if (this.currentTrackIndex > 0) {
+                        this.loadTrack(this.currentTrackIndex - 1);
+                    }
+                    break;
+                case 1:
+                    const lastTrack = this.lastTracks.pop();
+                    if (lastTrack === undefined) {
+                        this.nextTrack();
+                        return;
+                    } else {
+                        this.loadTrack(lastTrack);
+                    }
+                    break;
+                case -1:
+                    this.loadTrack(this.currentTrackIndex);
+                    break;
+                default:
+                    if (this.currentTrackIndex > 0) {
+                        this.loadTrack(this.currentTrackIndex - 1);
+                    }
+                    break;
+            }
         }
         this.play();
     }
@@ -218,22 +249,25 @@ class MusicPlayer {
         }
     }
 
-    lastTracks = [] // 使用一个栈记录上一曲信息，仅适用于随机播放，最大长度128
+    lastTracks = [];
 
     changePlayBackMode() {
+        if (this.isSharePage) return; // 在分享页面禁用播放模式切换
+        
         if (this.playbackMode.value === 1) {
-            this.playbackMode.value = -1
-            this.lastTracks = [] // 不再是随机播放，清空上一曲信息
+            this.playbackMode.value = -1;
+            this.lastTracks = [];
+        } else {
+            this.playbackMode.value += 1;
         }
-        else this.playbackMode.value += 1
 
-        const storage = JSON.parse(localStorage.getItem("lastmusic"))
+        const storage = JSON.parse(localStorage.getItem("lastmusic"));
         localStorage.setItem("lastmusic", JSON.stringify({
             id: storage.id,
             time: storage.time,
             playbackMode: this.playbackMode.value,
             lastTracks: this.lastTracks,
-        }))
+        }));
     }
 
     playingMusic = ref({
@@ -246,9 +280,9 @@ class MusicPlayer {
         nowTimeString: "0:00",
         maxTimeString: "0:00",
         pause: true,
-    })
+    });
 
-    playbackMode = ref(0) // 0: 顺序播放, 1: 随机播放, -1: 单曲循环
+    playbackMode = ref(0);
 }
 
-export { MusicPlayer }
+export { MusicPlayer };

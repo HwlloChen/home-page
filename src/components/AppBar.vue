@@ -1,6 +1,7 @@
 <template>
     <mdui-top-app-bar scroll-behavior="elevate" id="appbar" class="glass-border">
         <div style="width: 5px;"></div>
+        <mdui-button-icon icon="home" class="home-button" @click="goHome" v-if="!isHomePage"></mdui-button-icon>
         <mdui-top-app-bar-title>
             {{ globalVars.site.name }}
             <span class="subtitle" id="mainsubtitle">{{ subtitleText }}</span>
@@ -25,12 +26,22 @@
 
 <script setup>
 import IPv6Checker, { hasV6 } from './IPv6Checker.vue';
-import { available, loading, opendrawer, player } from './Music.vue';
+import { available, loading, opendrawer, player } from './SideMusic.vue';
 import { confirm, setTheme } from 'mdui';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { openDialog } from './Theme.vue';
 import { globalVars } from '@/utils/globalVars';
 import { artalk } from './Comments.vue';
+import { useRouter, useRoute } from 'vue-router';
+
+const router = useRouter();
+const route = useRoute();
+
+const isHomePage = computed(() => route.path === '/');
+
+function goHome() {
+    router.push('/');
+}
 
 /**
  * 设置明暗主题
@@ -189,5 +200,25 @@ mdui-button-icon {
 
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.home-button {
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-right: 8px;
+    
+    :deep(mdui-icon) {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &:hover :deep(mdui-icon) {
+        transform: scale(1.1);
+    }
+}
+
+:not(.isHomePage) .home-button {
+    transform: translateX(0);
+    opacity: 1;
 }
 </style>

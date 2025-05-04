@@ -1,6 +1,6 @@
 {
   "name": "homepage",
-  "version": "0.3.3",
+  "version": "0.4.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,7 +17,8 @@
     "mdui": "^2.1.2",
     "pace": "^0.0.4",
     "pace-js": "^1.2.4",
-    "vue": "^3.4.29"
+    "vue": "^3.4.29",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

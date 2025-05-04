@@ -120,8 +120,20 @@ function showAnnouncements() {
 export async function Announcements() {
     const res = await fetch(globalVars.site.backpoint + "/announcements")
     let data = await res.json()
-    data = await data.sort((a, b) => { return a.importance < b.importance })
-    globalVars.announcements = await data
+    if (res.status != 200 || !data) {
+        snackbar({
+            message: "公告获取失败，请稍后再试",
+            autoCloseDelay: 2500,
+            closeOnOutsideClick: true,
+            placement: 'bottom-start',
+        })
+        return
+    }
+
+    if (!Array.isArray(data) || data.length === 0) return
+
+    data = data.sort((a, b) => { return a.importance < b.importance })
+    globalVars.announcements = data
 
     showAnnouncements()
 }

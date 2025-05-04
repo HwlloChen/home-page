@@ -1,12 +1,13 @@
 <script setup>
 import { globalVars } from '@/utils/globalVars';
 import config from '../../package.json';
-import { onBeforeMount, ref } from 'vue';
-import { opendrawer, player } from './Music.vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
+import { opendrawer, player } from './SideMusic.vue';
 import { hasV6 } from './IPv6Checker.vue';
 
 const refDate = ref("")
 const dateFlag = ref(false)
+const runningType = ref("")
 var createdDate
 onBeforeMount(() => {
     if (Date.parse(globalVars.site.created_date) == Date.parse(globalVars.site.created_date)) {
@@ -18,6 +19,10 @@ onBeforeMount(() => {
     } else {
         dateFlag.value = false
     }
+})
+
+onMounted(() => {
+    runningType.value = import.meta.env.DEV ? "[INDEVELOPMENT]" : "[RELEASE]"
 })
 </script>
 
@@ -40,7 +45,7 @@ onBeforeMount(() => {
             <p v-if="dateFlag">本站已持续运行{{ refDate }}</p>
             <p><a href="https://icp.gov.moe/?keyword=20244114" target="_blank">萌ICP备20244114号</a></p>
             <p>Powered by <a href="https://gitee.com/HwlloChen/home-page" target="_blank">ChenServer v{{ config.version
-            }}</a></p>
+            }} {{ runningType }}</a></p>
         </div>
         <div class="right moeicp">
             <a href="https://icp.gov.moe/?keyword=20244114" target="_blank"><img src="/src/assets/moe_ico64.png"></a>

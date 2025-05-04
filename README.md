@@ -20,6 +20,7 @@ Hi there!👋
 - 可自定义的前端主题系统
 - 使用Material Design 3(Material You)设计风格
 - 支持连接Navidrome音乐服务器
+- 对音乐进行分享🥰
 - 主题自动适配
 - 支持连接Hitokoto一言
 - 站长个人信息卡片

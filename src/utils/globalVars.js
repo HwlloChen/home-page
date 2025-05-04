@@ -72,7 +72,7 @@ const globalVars = reactive({
     site: {
         name: "ChenServer",
         created_date: "2022-10-09T00:00:00", // ISO8601格式日期字符串，记录网站创建时间, 胡填代表不使用
-        backpoint: 'https://v4.chenserver.top/api',
+        backpoint: import.meta.env.DEV ? 'http://localhost:1145' : 'https://v4.chenserver.top/api',
         backpoint_v6: "https://www.chenserver.top:81",
     },
     artalk: {
