@@ -4,6 +4,12 @@ import Services from '../components/Services.vue';
 import AboutMe from '../components/AboutMe.vue';
 import { globalVars } from '../utils/globalVars';
 import Comments from '../components/Comments.vue';
+import { Announcements } from '@/utils/Announcements';
+import { onMounted } from 'vue';
+
+onMounted(() => {
+    Announcements() // 显示公告
+})
 </script>
 
 <template>

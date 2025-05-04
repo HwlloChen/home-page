@@ -21,7 +21,6 @@
  */
 import { globalVars } from "./globalVars"
 import config from '../../package.json'
-import { Announcements } from "./Announcements";
 
 /**
  * Init Theme
@@ -35,8 +34,5 @@ if (localStorage.getItem("theme") == null) {
 }
 // 加载主题配置
 globalVars.theme = JSON.parse(localStorage.getItem("theme"))
-
-// 显示公告
-Announcements()
 
 console.log(`Welcome to ChenServer Version ${config.version}`)
