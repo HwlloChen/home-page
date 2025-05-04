@@ -44,3 +44,21 @@ npm run build
 
 ```
 
+#### 配置
+
+- 编辑`utils/globalVars.js`以适应你的环境。
+- 程序打包好后可以直接以静态页面部署到服务器上
+- 注意设置`/music`相关配置，此处以Nginx为例：
+  ```nginx
+  server {
+      # ......
+      # 之前的配置
+
+      location /music {
+          try_files $uri $uri/ /index.html;
+      }
+
+      # 之后的配置
+      # ......
+  }
+  ```
