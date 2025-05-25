@@ -75,6 +75,7 @@ import { globalVars } from '@/utils/globalVars';
 import { useRoute } from 'vue-router';
 import { player, available, headers, music_list } from '@/components/SideMusic.vue';
 import { hasV6 } from '@/components/IPv6Checker.vue';
+import { setTitle, subtitle } from '@/components/AppBar.vue';
 
 const shareData = ref(null);
 const currentUrl = ref(window.location.href);
@@ -126,12 +127,15 @@ async function initializeSharePage() {
         });
         detail = await r2.json();
 
+        setTitle(shareData.value.title, `${shareData.value.title} - ${shareData.value.artist} | ${globalVars.site.name}`);
+
         // 格式化分享时间
         musicDetail.value.shareTimeFormatted = new Date(shareData.value.shareTime * 1000)
             .toLocaleString('zh-CN');
 
         // 获取音乐评论
         musicDetail.value.musicComment = shareData.value.comment || '该分享没有留言哦~';
+        if(shareData.value.comment) subtitle.text(shareData.value.comment, 2000, 3000);
         // 获取文件大小detail.size(由字节转换为合适单位)
         musicDetail.value.fileSize = detail.size > 1024 * 1024
             ? (detail.size / (1024 * 1024)).toFixed(2) + ' MB'
@@ -254,7 +258,7 @@ function getCoverUrl() {
     if (!shareData.value || !globalVars.navidrome.login) return '';
     const { server, user, clientName } = globalVars.navidrome;
     const { subsonicToken, subsonicSalt } = globalVars.navidrome.login;
-    return `${shareData.value.serverUrl}/rest/getCoverArt?u=${user}&t=${subsonicToken}&s=${subsonicSalt}&f=json&v=1.8.0&c=${clientName}&id=al-${shareData.value.albumId}&size=256`;
+    return `${shareData.value.serverUrl}/rest/getCoverArt?u=${user}&t=${subsonicToken}&s=${subsonicSalt}&f=json&v=1.8.0&c=${clientName}&id=al-${shareData.value.albumId}&size=2048`;
 }
 
 function togglePlayPause() {
@@ -318,7 +322,7 @@ function openInNavidrome() {
     min-height: 300px;
     padding: 2rem;
     margin: 2rem auto;
-    max-width: 700px;
+    max-width: 800px;
 }
 
 .overlay {

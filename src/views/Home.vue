@@ -6,8 +6,10 @@ import { globalVars } from '../utils/globalVars';
 import Comments from '../components/Comments.vue';
 import { Announcements } from '@/utils/Announcements';
 import { onMounted } from 'vue';
+import { setTitle } from '@/components/AppBar.vue';
 
 onMounted(() => {
+    setTitle(globalVars.site.name);
     Announcements() // 显示公告
 })
 </script>

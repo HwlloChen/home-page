@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { globalVars } from "./globalVars";
+import { subtitle } from "@/components/AppBar.vue";
 const navidrome = globalVars.navidrome
 
 /**
@@ -20,6 +21,8 @@ const navidrome = globalVars.navidrome
  * player.init(audioElement);
  * player.loadPlaylist(songs);
  */
+
+
 class MusicPlayer {
     constructor() {
         this.isSharePage = window.location.pathname.startsWith('/music/share/');
@@ -36,6 +39,7 @@ class MusicPlayer {
     }
 
     playlistLoaded = false;
+    firstLoad = true;
 
     // 加载播放列表
     loadPlaylist(songs) {
@@ -49,7 +53,7 @@ class MusicPlayer {
             const storage = JSON.parse(localStorage.getItem("lastmusic"));
             var flag = false;
             this.playbackMode.value = storage.playbackMode;
-            
+
             // 查找歌曲是否仍然存在
             for (const [index, music] of this.playlist.entries()) {
                 if (music.realId === storage.id) {
@@ -83,7 +87,8 @@ class MusicPlayer {
         const nowTime = this.audio.currentTime;
         this.playingMusic.value.nowTime = Math.floor(nowTime);
         this.playingMusic.value.nowTimeString = this.formatTime(nowTime);
-
+        if (this.firstLoad) { this.firstLoad = false; return; }
+        this.updateLyric();
         // 在分享页面不需要保存播放进度
         if (!this.isSharePage) {
             localStorage.setItem("lastmusic", JSON.stringify({
@@ -122,6 +127,8 @@ class MusicPlayer {
         this.playingMusic.value.information = `${this.track.artist} - ${this.track.album}`;
         this.playingMusic.value.index = index;
         this.playingMusic.value.trackId = this.track.realId;
+        this.playingMusic.value.lyrics = JSON.parse(this.track.lyrics)[0].line;
+        this.currentLyricTimeshift = 0;
 
         // 获取音频流的 URL
         const streamUrl = await this.getSubsonicStreamUrl(this.track.realId);
@@ -139,13 +146,47 @@ class MusicPlayer {
             setTimeout(() => {
                 const musicList = document.querySelector(".music-list");
                 if (musicList && musicList.children[index]) {
-                    musicList.children[index].scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
+                    musicList.children[index].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
                     });
                 }
             }, 200);
         }
+    }
+
+    updateLyric() {
+        // 获取当前播放时间，单位毫秒
+        const now = Math.floor(this.audio.currentTime * 1000);
+        const lyrics = this.playingMusic.value.lyrics;
+        if (!Array.isArray(lyrics) || lyrics.length === 0) return;
+
+        // 二分查找当前时间应该显示的歌词索引
+        let left = 0, right = lyrics.length - 1, currentIndex = 0;
+        while (left <= right) {
+            const mid = Math.floor((left + right) / 2);
+            if (lyrics[mid].start <= now) {
+                currentIndex = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        const currentLyricStart = lyrics[currentIndex].start;
+        const nextLyricStart = (lyrics[currentIndex + 1] ? lyrics[currentIndex + 1].start : Infinity);
+
+        // 检查当前时间是否在当前歌词的时间范围内
+        if (this.currentLyricTimeshift === currentLyricStart) {
+            return;
+        }
+
+        // 否则，更新 currentLyricTimeshift，并留给你处理歌词显示
+        this.currentLyricTimeshift = currentLyricStart;
+        var interval = currentIndex < lyrics.length - 1 ? (lyrics[currentIndex + 1].start - now) : 4000;
+        interval *= 0.8;
+        interval -= 400;
+        interval = Math.max(interval, 50);
+        subtitle.text(lyrics[currentIndex].value, 400, interval);
     }
 
     play() {
@@ -253,7 +294,7 @@ class MusicPlayer {
 
     changePlayBackMode() {
         if (this.isSharePage) return; // 在分享页面禁用播放模式切换
-        
+
         if (this.playbackMode.value === 1) {
             this.playbackMode.value = -1;
             this.lastTracks = [];
@@ -283,6 +324,8 @@ class MusicPlayer {
     });
 
     playbackMode = ref(0);
+
+    currentLyricTimeshift = 0;
 }
 
 export { MusicPlayer };

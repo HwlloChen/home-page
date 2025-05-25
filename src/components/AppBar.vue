@@ -2,17 +2,19 @@
     <mdui-top-app-bar scroll-behavior="elevate" id="appbar" class="glass-border">
         <div style="width: 5px;"></div>
         <mdui-button-icon icon="home" class="home-button" @click="goHome" v-if="!isHomePage"></mdui-button-icon>
-        <mdui-top-app-bar-title>
-            {{ globalVars.site.name }}
+        <div class="appbar-title-wrap">
+            <mdui-top-app-bar-title>
+                {{ titleText }}
+            </mdui-top-app-bar-title>
             <span class="subtitle" id="mainsubtitle">{{ subtitleText }}</span>
-        </mdui-top-app-bar-title>
-        <div style="flex-grow: 1"></div>
+        </div>
         <IPv6Checker />
         <mdui-button-icon icon="queue_music" :="{ disabled: !available, loading: loading }"
             :style="player.playingMusic.value.pause ? '' : 'color: rgb(var(--mdui-color-primary))'" @click="opendrawer"
             v-if="hasV6 && globalVars.navidrome.enable"></mdui-button-icon>
         <mdui-tooltip :content="tip">
-            <mdui-button-icon :icon="brightness_icon" @click="changeTheme(brightness_modes.indexOf(globalVars.theme.light) + 1)"></mdui-button-icon>
+            <mdui-button-icon :icon="brightness_icon"
+                @click="changeTheme(brightness_modes.indexOf(globalVars.theme.light) + 1)"></mdui-button-icon>
         </mdui-tooltip>
         <mdui-dropdown>
             <mdui-button-icon slot="trigger" icon="more_vert"></mdui-button-icon>
@@ -73,10 +75,7 @@ onMounted(() => {
     fetch(`${globalVars.site.backpoint}/ip`)
         .then((response) => response.json())
         .then((data) => {
-            subtitle.text(`欢迎来自「${formatLocation(data.location)}」的朋友！`)
-            setTimeout(() => {
-                subtitle.clear()
-            }, 4000);
+            subtitle.text(`欢迎来自「${formatLocation(data.location)}」的朋友！`, 0, 3000)
         })
         .catch((e) => {
             console.warn(e)
@@ -86,6 +85,7 @@ onMounted(() => {
 
 <script>
 
+const titleText = ref(globalVars.site.name)
 const subtitleText = ref("")
 document.title = globalVars.site.name
 
@@ -117,27 +117,65 @@ export function changeTheme(value) {
     localStorage.setItem("theme", JSON.stringify(globalVars.theme))
 }
 
+var clearLock = false
 export const subtitle = {
-    text(text) {
+    async text(text, timeout = 0, interval = 1000) {
         const d = document.getElementById("mainsubtitle")
+        clearLock = true
         if (subtitleText.value.length >= 1) {
-            d.style.opacity = 0;
+            setTimeout(() => {
+                d.style.opacity = 0;
+                setTimeout(() => {
+                    subtitleText.value = text
+                    d.style.opacity = 1
+                    if (interval > 0) {
+                        setTimeout(() => {
+                            // Only clear if the text hasn't changed
+                            if (subtitleText.value === text) {
+                                clearLock = false
+                                subtitle.clear()
+                            }
+                        }, interval);
+                    } else {
+                        clearLock = false
+                    }
+                }, timeout / 2);
+            }, timeout / 2);
+        } else {
+            clearLock = false
+            subtitleText.value = text
+            d.style.opacity = 1;
             setTimeout(() => {
                 subtitleText.value = text
                 d.style.opacity = 1
-            }, 500);
-        } else {
-            subtitleText.value = text
-            d.style.opacity = 1;
+                if (interval > 0) {
+                    setTimeout(() => {
+                        // Only clear if the text hasn't changed
+                        if (subtitleText.value === text) {
+                            clearLock = false
+                            subtitle.clear()
+                        }
+                    }, interval);
+                } else {
+                    clearLock = false
+                }
+            }, timeout / 2);
         }
     },
-    clear() {
+    async clear() {
+        if (clearLock) return
         const d = document.getElementById("mainsubtitle")
         d.style.opacity = 0;
         setTimeout(() => {
+            if (clearLock) return
             subtitleText.value = ""
-        }, 700);
+        }, 200);
     }
+}
+
+export const setTitle = (appbarText, documentText) => {
+    titleText.value = appbarText
+    document.title = documentText ? documentText : appbarText
 }
 
 </script>
@@ -148,6 +186,89 @@ mdui-top-app-bar {
     height: 4rem;
     align-items: center;
     transition: background-color backdrop-filter 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.appbar-title-wrap {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    flex-direction: row;
+    flex-grow: 1;
+    min-width: 0;
+    /* 允许子项收缩，防止子项撑大父容器 */
+
+    mdui-top-app-bar-title {
+        line-height: 1.7rem;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 1023px) {
+    .appbar-title-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+        position: relative;
+        min-width: 0;
+        height: auto;
+    }
+
+    .subtitle {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        /* 紧贴主标题下方 */
+        width: 100%;
+        max-width: 90vw;
+        padding-left: 0;
+        pointer-events: none;
+    }
+}
+
+@media (min-width: 1024px) {
+    .appbar-title-wrap {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        min-width: 0;
+        /* 允许子项收缩，防止子项撑大父容器 */
+        flex: 1 1 0%;
+    }
+
+    .appbar-title-wrap mdui-top-app-bar-title {
+        flex-shrink: 0;
+        width: auto;
+        min-width: max-content;
+    }
+
+    .subtitle {
+        position: static;
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        margin-left: .6em;
+        max-width: 100%;
+        min-width: 0;
+        flex: 1 1 0%;
+        overflow: hidden;
+    }
+}
+
+.subtitle {
+    color: gray;
+    transition: all .85s var(--mdui-motion-easing-standard);
+    opacity: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, #000 80%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 80%, transparent 100%);
+    pointer-events: none;
+    user-select: none;
+    font-size: var(--mdui-typescale-title-small-size);
+    font-weight: var(--mdui-typescale-body-small-weight);
+    letter-spacing: var(--mdui-typescale-body-small-tracking);
+    line-height: var(--mdui-typescale-body-small-line-height);
+    padding-left: 0;
 }
 
 .glass {
@@ -172,42 +293,12 @@ mdui-button-icon {
     transition: font-variation-settings .2s cubic-bezier(.2, 0, 0, 1);
 }
 
-.subtitle {
-    color: gray;
-    transition: all .85s var(--mdui-motion-easing-standard);
-    opacity: 0;
-
-    @media(max-width: 1080px) {
-        width: 100%;
-        display: block;
-        position: absolute;
-        font-size: var(--mdui-typescale-title-small-size);
-        font-weight: var(--mdui-typescale-body-small-weight);
-        letter-spacing: var(--mdui-typescale-body-small-tracking);
-        line-height: 0 !important;
-    }
-
-    @media (min-width: 1081px) {
-        display: inline-block;
-        font-size: var(--mdui-typescale-title-medium-size);
-        font-weight: var(--mdui-typescale-body-small-weight);
-        letter-spacing: var(--mdui-typescale-body-small-tracking);
-        line-height: var(--mdui-typescale-body-small-line-height);
-        padding-left: .4em;
-        overflow: hidden;
-    }
-
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
 .home-button {
     transform: translateX(-100%);
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     margin-right: 8px;
-    
+
     :deep(mdui-icon) {
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
