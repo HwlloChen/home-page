@@ -78,12 +78,13 @@ function showAnnouncements() {
                     })
                 } else {
                     const dialogBody = document.createElement('div')
+                    dialogBody.style = "padding: 0 1rem; min-width: 20rem"
 
                     const contentDiv = document.createElement('div');
 
                     contentDiv.innerHTML = marked.parse(a.content.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ""))
                     contentDiv.className = "mdui-prose";
-                    contentDiv.style = "margin-bottom: 10px; margin: 1rem 0; width: 100%; height: auto; overflow-x: hidden;"
+                    contentDiv.style = "margin-bottom: 10px; width: 100%; height: auto; overflow-x: hidden;"
 
                     const publisherDiv = document.createElement('div');
                     publisherDiv.innerHTML = `发布者：${a.publisher} <br>${new Date(a.publishTime).toLocaleString()}`;
