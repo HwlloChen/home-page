@@ -200,6 +200,13 @@ mdui-top-app-bar {
     mdui-top-app-bar-title {
         line-height: 1.7rem;
         flex-shrink: 0;
+        max-width: calc(100vw - 350px);
+    }
+}
+
+@media (max-width: 600px) {
+    mdui-top-app-bar-title {
+        max-width: calc(100vw - 225px) !important;
     }
 }
 
@@ -238,7 +245,6 @@ mdui-top-app-bar {
     .appbar-title-wrap mdui-top-app-bar-title {
         flex-shrink: 0;
         width: auto;
-        min-width: max-content;
     }
 
     .subtitle {
