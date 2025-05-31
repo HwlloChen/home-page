@@ -193,18 +193,65 @@ mdui-top-app-bar {
     align-items: flex-start;
     position: relative;
     flex-direction: row;
-    flex: 1 1 0%;
+    flex-grow: 1;
     min-width: 0;
     /* 允许子项收缩，防止子项撑大父容器 */
+
+    mdui-top-app-bar-title {
+        line-height: 1.7rem;
+        flex-shrink: 0;
+    }
 }
 
-.appbar-title-wrap mdui-top-app-bar-title {
-    line-height: 1.7rem;
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+@media (max-width: 1023px) {
+    .appbar-title-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+        position: relative;
+        min-width: 0;
+        height: auto;
+    }
+
+    .subtitle {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        /* 紧贴主标题下方 */
+        width: 100%;
+        max-width: 90vw;
+        padding-left: 0;
+        pointer-events: none;
+    }
+}
+
+@media (min-width: 1024px) {
+    .appbar-title-wrap {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        min-width: 0;
+        /* 允许子项收缩，防止子项撑大父容器 */
+        flex: 1 1 0%;
+    }
+
+    .appbar-title-wrap mdui-top-app-bar-title {
+        flex-shrink: 0;
+        width: auto;
+        min-width: max-content;
+    }
+
+    .subtitle {
+        position: static;
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        margin-left: .6em;
+        max-width: 100%;
+        min-width: 0;
+        flex: 1 1 0%;
+        overflow: hidden;
+    }
 }
 
 .subtitle {
@@ -222,14 +269,6 @@ mdui-top-app-bar {
     letter-spacing: var(--mdui-typescale-body-small-tracking);
     line-height: var(--mdui-typescale-body-small-line-height);
     padding-left: 0;
-}
-
-/* 右侧所有按钮和IPv6Checker防止被挤压 */
-IPv6Checker,
-mdui-button-icon,
-mdui-tooltip,
-mdui-dropdown {
-    flex-shrink: 0;
 }
 
 .glass {
