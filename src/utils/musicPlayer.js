@@ -127,7 +127,14 @@ class MusicPlayer {
         this.playingMusic.value.information = `${this.track.artist} - ${this.track.album}`;
         this.playingMusic.value.index = index;
         this.playingMusic.value.trackId = this.track.realId;
-        this.playingMusic.value.lyrics = JSON.parse(this.track.lyrics)[0].line;
+
+        const parsedLyrics = JSON.parse(this.track.lyrics)
+        if (parsedLyrics.length) {
+            this.playingMusic.value.lyrics = parsedLyrics[0].line;
+        } else {
+            this.playingMusic.value.lyrics = [{ start: 1000, value: "纯音乐, 请欣赏~" }];
+        }
+
         this.currentLyricTimeshift = 0;
 
         // 获取音频流的 URL
@@ -186,6 +193,8 @@ class MusicPlayer {
         interval *= 0.8;
         interval -= 400;
         interval = Math.max(interval, 50);
+        // 设置最长持续时间为字符数量*1300ms
+        interval = Math.min(interval, lyrics[currentIndex].value.length * 1300);
         subtitle.text(lyrics[currentIndex].value, 400, interval);
     }
 
