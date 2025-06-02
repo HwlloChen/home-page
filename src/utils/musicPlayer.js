@@ -164,7 +164,7 @@ class MusicPlayer {
 
     updateLyric() {
         // 获取当前播放时间，单位毫秒
-        const now = Math.floor(this.audio.currentTime * 1000);
+        const now = Math.floor(this.audio.currentTime * 1000) + 80; // 加80毫秒以避免歌词过慢显示
         const lyrics = this.playingMusic.value.lyrics;
         if (!Array.isArray(lyrics) || lyrics.length === 0) return;
 
