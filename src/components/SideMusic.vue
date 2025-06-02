@@ -523,7 +523,14 @@ mdui-button-icon.disabled {
 .glass {
     #music-drawer::part(panel) {
         background-color: rgba(var(--mdui-color-surface-container-low), 0.25);
-        backdrop-filter: blur(8.5px);
+
+        &::before {
+            backdrop-filter: blur(8.5px);
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+        }
     }
 
     mdui-list-item[active] {

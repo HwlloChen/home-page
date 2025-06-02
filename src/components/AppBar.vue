@@ -1,7 +1,8 @@
 <template>
     <mdui-top-app-bar scroll-behavior="elevate" id="appbar" class="glass-border">
         <div style="width: 5px;"></div>
-        <mdui-button-icon icon="home" class="home-button" @click="goHome" v-if="!isHomePage"></mdui-button-icon>
+        <mdui-button-icon icon="home" class="home-button" @click="goHome" v-if="!isHomePage && !isAdminPage"></mdui-button-icon>
+        <mdui-button-icon icon="menu" class="menu-button" @click="drawerEvent" v-if="isAdminPage"></mdui-button-icon>
         <div class="appbar-title-wrap">
             <mdui-top-app-bar-title>
                 {{ titleText }}
@@ -40,6 +41,7 @@ const router = useRouter();
 const route = useRoute();
 
 const isHomePage = computed(() => route.path === '/');
+const isAdminPage = computed(() => route.path.startsWith('/admin'));
 
 function goHome() {
     router.push('/');
@@ -111,7 +113,7 @@ export function changeTheme(value) {
     value = value % 3;
     globalVars.theme.light = brightness_modes[value]
     setTheme(globalVars.theme.light)
-    artalk === artalk ? artalk.setDarkMode(["auto", false, true][value]) : null
+    if(artalk) artalk.setDarkMode(["auto", false, true][value])
     brightness_icon.value = ['brightness_auto', 'light_mode', 'dark_mode'][brightness_modes.indexOf(globalVars.theme.light)]
     tip.value = ['跟随系统', '亮色模式', '暗色模式'][brightness_modes.indexOf(globalVars.theme.light)]
     localStorage.setItem("theme", JSON.stringify(globalVars.theme))
@@ -178,6 +180,9 @@ export const setTitle = (appbarText, documentText) => {
     document.title = documentText ? documentText : appbarText
 }
 
+const drawerEvent = () => {
+    window.dispatchEvent(new CustomEvent('toggle-admin-drawer'));
+}
 </script>
 
 <style lang="less" scoped>

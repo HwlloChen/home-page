@@ -9,8 +9,8 @@ bg = "https://chenserver.top/dl/pic.png"
 
 <template>
 	<template v-for="site in sites">
-		<mdui-card variant="elevated" :class="site.cover ? 'bg' : 'text'" data-aos="fade-right"
-			data-aos-anchor-placement="top-bottom" data-aos-offset="40"
+		<mdui-card variant="elevated" :class="['service-card', site.cover && site.cover != 'false' ? 'bg' : 'text']"
+			data-aos="fade-right" data-aos-anchor-placement="top-bottom" data-aos-offset="40"
 			:style="`--bg-url: url(${site.cover ? site.cover : ''}); --site-title: '${addEscapeToQuotes(site.title)}'`">
 			<div class="info">
 				<div class="primary">
@@ -262,7 +262,7 @@ mdui-card {
 		border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
 	}
 
-	mdui-card {
+	.service-card {
 		&.bg::before {
 			width: 100%;
 			height: 100%;
@@ -282,6 +282,9 @@ mdui-card {
 			width: 103%;
 			height: 103%;
 		}
+
+		backdrop-filter: blur(6.5px);
+		-webkit-backdrop-filter: blur(6.5px);
 	}
 }
 </style>

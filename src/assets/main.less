@@ -41,8 +41,14 @@ body {
 
 		&::part(panel) {
 			background-color: rgba(var(--mdui-color-surface-container-high), 0.35);
-			backdrop-filter: blur(7.5px);
-			-webkit-backdrop-filter: blur(7.5px);
+			&::before {
+				backdrop-filter: blur(6.5px);
+				-webkit-backdrop-filter: blur(6.5px);
+				content: "";
+				position: absolute;
+				inset: 0;
+				z-index: -1;
+			}
 		}
 
 		mdui-top-app-bar[slot="header"] {
@@ -50,9 +56,14 @@ body {
 		}
 	}
 
-	mdui-card {
+	// 仅对没有 service-card 类的 mdui-card 生效
+	mdui-card:not(.service-card)::before {
 		backdrop-filter: blur(6.5px);
 		-webkit-backdrop-filter: blur(6.5px);
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
 	}
 
 	mdui-menu {

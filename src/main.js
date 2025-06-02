@@ -29,6 +29,28 @@ const router = createRouter({
         {
             path: '/music/share/:id',
             component: () => import('./views/MusicShare.vue')
+        },
+        {
+            path: '/admin',
+            component: () => import('./views/Admin.vue'),
+            children: [
+                {
+                    path: '',
+                    component: () => import('./views/admin/AboutAdmin.vue')
+                },
+                {
+                    path: 'announcements',
+                    component: () => import('./views/admin/AnnouncementsAdmin.vue')
+                },
+                {
+                    path: 'sites',
+                    component: () => import('./views/admin/SitesAdmin.vue')
+                },
+                {
+                    path: 'music-share',
+                    component: () => import('./views/admin/MusicShareAdmin.vue')
+                }
+            ]
         }
     ]
 })
