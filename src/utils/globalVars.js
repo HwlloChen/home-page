@@ -60,6 +60,7 @@ const globalVars = reactive({
         color: "#e97f6d",
         bgImage: "https://chenserver.top/files/img/mc/MoAoXnX.png",
         useGlass: window.screen.width >= 1080 ? true : false, // 根据屏幕宽度决定
+        live2d: true, // 是否启用Live2D
     },
     author: {
         name: "Chen",
@@ -80,6 +81,18 @@ const globalVars = reactive({
         server: "https://artalk.chenserver.top",
         site: "ChenServer主站",
         pageTitle: "ChenServer",
+    },
+    live2d: {
+        enable: true, // 是否启用Live2D(后续以theme.live2d为准)
+        model: '/src/assets/live2d/阿米娅(1).model3.json', // Live2D模型地址
+        width: 400, // 宽度
+        height: 500, // 高度
+        left: -80, // 水平位置偏移
+        bottom: 0, // 垂直位置偏移
+        position: { // 模型位置
+            x: "left", // 水平位置（left/right）
+            y: "bottom" // 垂直位置（top/bottom）
+        },
     }
 })
 

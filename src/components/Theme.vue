@@ -30,6 +30,14 @@
                 <mdui-button @click="useImgURL" variant="text">or 使用网络图片</mdui-button>
             </div>
         </div>
+        <mdui-divider vertical></mdui-divider>
+        <mdui-list>
+            <mdui-list-item>
+                阿米娅Live2D
+                <mdui-icon slot="icon" name="face"></mdui-icon>
+                <mdui-switch id="live2d-switch" slot="end-icon"></mdui-switch>
+            </mdui-list-item>
+        </mdui-list>
     </mdui-dialog>
 </template>
 
@@ -57,6 +65,9 @@ onMounted(() => {
             useImageChkBox.removeAttribute("disabled")
         }, 50);
     }
+
+    const live2dSwitch = document.getElementById("live2d-switch")
+    globalVars.theme.live2d ? live2dSwitch.setAttribute("checked", true) : live2dSwitch.removeAttribute("checked");
 
     document.getElementById('color_imageInput').addEventListener('change', function (event) {
         const file = event.target.files[0];
@@ -193,6 +204,9 @@ function saveTheme() {
 
         globalVars.theme.useGlass = useGlassChkBox.hasAttribute("checked")
         useGlass.value = globalVars.theme.useGlass
+
+        const live2dSwitch = document.getElementById("live2d-switch")
+        globalVars.theme.live2d = live2dSwitch.hasAttribute("checked")
 
         localStorage.setItem("theme", JSON.stringify(globalVars.theme))
 
