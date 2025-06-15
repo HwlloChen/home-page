@@ -13,6 +13,8 @@
     "aos": "^2.3.4",
     "artalk": "^2.9.1",
     "compressorjs": "^1.2.1",
+    "crypto-js": "^4.2.0",
+    "easy-live2d": "^0.3.2",
     "marked": "^15.0.7",
     "mdui": "^2.1.2",
     "pace": "^0.0.4",

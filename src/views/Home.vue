@@ -61,7 +61,7 @@ onMounted(() => {
 @side-width-large: 25%;
 @margin-side: 1.5rem;
 @padding-main: 1.5rem;
-@max-main-width: 1500px;
+@max-main-width: 1350px;
 
 .main {
     display: flex;

@@ -11,7 +11,7 @@ import { reactive } from "vue";
  * @property {string} navidrome.clientName - Client name for Navidrome / Navidrome 客户端名称
  * @property {string} navidrome.user - Username for Navidrome authentication / Navidrome 用户名
  * @property {string} navidrome.password - Password for Navidrome authentication / Navidrome 密码
- * @property {boolean} navidrome.ipv6 - Enable/disable IPv6 support / 启用/禁用 IPv6 支持
+ * @property {boolean} navidrome.ipv6 - Enable/disable IPv6 Required / 启用/禁用 强制 IPv6
  * @property {Object} navidrome.login - Login status / 登录状态
  * @property {Object} theme - Theme configuration / 主题配置
  * @property {string} theme.light - Theme mode ('dark' or 'light') / 主题模式（'dark'或'light'）
@@ -57,8 +57,8 @@ const globalVars = reactive({
     },
     theme: { // 默认主题设置
         light: "dark",
-        color: "#394b6b",
-        bgImage: "https://chenserver.top/files/img/mc/2022-summer_je_2.png",
+        color: "#e97f6d",
+        bgImage: "https://chenserver.top/files/img/mc/MoAoXnX.png",
         useGlass: window.screen.width >= 1080 ? true : false, // 根据屏幕宽度决定
     },
     author: {
