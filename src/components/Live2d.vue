@@ -399,7 +399,7 @@ const handleResize = () => {
 const initLive2d = async () => {
     // 动态加载 live2dcubismcore.min.js 脚本
     const script = document.createElement('script');
-    script.src = '/src/utils/live2dcubismcore.min.js';
+    script.src = '/live2d-assets/live2dcubismcore.min.js'; // 修改为 public 目录下的路径
     script.id = 'live2d-cubismcore-script';
     script.async = true;
     document.head.appendChild(script);
