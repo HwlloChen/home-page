@@ -84,7 +84,7 @@ const globalVars = reactive({
     },
     live2d: {
         enable: true, // 是否启用Live2D(后续以theme.live2d为准)
-        model: '/src/assets/live2d/阿米娅(1).model3.json', // Live2D模型地址
+        model: 'https://chenserver.top/files/live2d/阿米娅(1).model3.json', // Live2D模型地址
         width: 400, // 宽度
         height: 500, // 高度
         left: -80, // 水平位置偏移
