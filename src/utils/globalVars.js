@@ -41,7 +41,7 @@ const globalVars = reactive({
     navidrome: { // 此处配置应在后期迁移至后端服务器获取（可能是直接得到cookie）
         enable: true,
         // Navidrome音乐服务器
-        server: "https://www.chenserver.top:81/music",
+        server: "https://www.etaris.moe:81/music",
         /**
          * 更改此处playListURL实现从Navidrome服务器获取不同的播放列表与切片(url + 排序方式等参数)
          * 目前支持: /api/song 全部歌曲列表
@@ -58,7 +58,7 @@ const globalVars = reactive({
     theme: { // 默认主题设置
         light: "dark",
         color: "#e97f6d",
-        bgImage: "https://chenserver.top/files/img/mc/MoAoXnX.png",
+        bgImage: "https://etaris.moe/files/img/mc/MoAoXnX.png",
         useGlass: window.screen.width >= 1080 ? true : false, // 根据屏幕宽度决定
         live2d: true, // 是否启用Live2D
     },
@@ -73,12 +73,12 @@ const globalVars = reactive({
     site: {
         name: "ChenServer",
         created_date: "2022-10-09T00:00:00", // ISO8601格式日期字符串，记录网站创建时间, 胡填代表不使用
-        backpoint: import.meta.env.DEV ? 'http://localhost:1145' : 'https://v4.chenserver.top/api',
-        backpoint_v6: "https://www.chenserver.top:81",
+        backpoint: import.meta.env.DEV ? 'http://localhost:1145' : 'https://v4.etaris.moe/api',
+        backpoint_v6: "https://www.etaris.moe:81",
     },
     artalk: {
         enable: true,
-        server: "https://artalk.chenserver.top",
+        server: "https://artalk.etaris.moe",
         site: "ChenServer主站",
         pageTitle: "ChenServer",
     },

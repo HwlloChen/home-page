@@ -3,8 +3,6 @@ import { globalVars } from '@/utils/globalVars';
 import { ref } from 'vue';
 import { hasV6 } from './IPv6Checker.vue';
 
-bg = "https://chenserver.top/dl/pic.png"
-
 </script>
 
 <template>
@@ -34,8 +32,6 @@ bg = "https://chenserver.top/dl/pic.png"
 </template>
 
 <script>
-
-var bg
 const sites = ref([])
 
 fetch(`${globalVars.site.backpoint}/sites`).then(response => response.json())
@@ -58,10 +54,10 @@ fetch(`${globalVars.site.backpoint}/sites`).then(response => response.json())
 			{
 				"title": "Chen's Blog",
 				"description": "My blog!!",
-				"url": "https://blog.chenserver.top:81",
+				"url": "https://blog.etaris.moe",
 				"cover": false,
 				"blank": false,
-				"v6": true
+				"v6": false
 			},
 			{
 				"title": "弘毅Club",

@@ -10,7 +10,7 @@ Hi there!👋
 
 使用 [Vuejs](https://vuejs.org) 和 [mdui](https://mdui.org)
 
-[Demo Page(https://chenserver.top)](https://chenserver.top)
+[Demo Page(https://etaris.moe)](https://etaris.moe)
 
 以GPLv3协议开源。
 

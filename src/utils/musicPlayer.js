@@ -323,7 +323,7 @@ class MusicPlayer {
     playingMusic = ref({
         title: "ChenServer Music",
         information: "Enjoy Music.",
-        cover: "https://v4.chenserver.top:11450/covers/navidrome.png",
+        cover: "https://v4.etaris.moe:11450/covers/navidrome.png",
         index: -1,
         nowTime: 0,
         maxTime: 0,

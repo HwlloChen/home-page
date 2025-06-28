@@ -177,7 +177,7 @@ onUnmounted(() => {
           </mdui-tooltip>
           <mdui-tooltip :content="`QQ`" placement="top-start">
             <mdui-button-icon v-if="globalVars.author.qq"
-              :href="`tencent://message/?uin=${String(globalVars.author.qq)}&Site=chenserver.top&Menu=yes`"
+              :href="`tencent://message/?uin=${String(globalVars.author.qq)}&Menu=yes`"
               target="_blank" icon="chat" variant="tonal"></mdui-button-icon>
           </mdui-tooltip>
         </div>
