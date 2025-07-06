@@ -23,12 +23,11 @@
   <mdui-navigation-drawer v-if="authed" class="admin-drawer" :open="drawerOpen" contained close-on-overlay-click>
     <mdui-list>
       <mdui-list-item end-icon="info" :active="tab === 'about'" @click="goTab('about')" rounded>关于</mdui-list-item>
-      <mdui-list-item end-icon="announcement" :active="tab === 'announcements'" @click="goTab('announcements')"
-        rounded>公告管理</mdui-list-item>
-      <mdui-list-item end-icon="link" :active="tab === 'sites'" @click="goTab('sites')" rounded>站点管理</mdui-list-item>
-      <mdui-list-item end-icon="library_music" :active="tab === 'music'" @click="goTab('music')"
-        rounded>音乐分享管理</mdui-list-item>
-        <mdui-list-item end-icon="open_in_new" href="/" target="_blank" rounded>打开主页</mdui-list-item>
+      <mdui-list-item end-icon="announcement" :active="tab === 'announcements'" @click="goTab('announcements')" rounded>公告管理</mdui-list-item>
+      <mdui-list-item end-icon="dns--rounded" :active="tab === 'sites'" @click="goTab('sites')" rounded>站点管理</mdui-list-item>
+      <mdui-list-item end-icon="link" :active="tab === 'links'" @click="goTab('links')" rounded>友链管理</mdui-list-item>
+      <mdui-list-item end-icon="library_music" :active="tab === 'music'" @click="goTab('music')" rounded>音乐分享管理</mdui-list-item>
+      <mdui-list-item end-icon="open_in_new" href="/" target="_blank" rounded>打开主页</mdui-list-item>
       <mdui-list-item end-icon="logout" @click="logout" rounded>退出登录</mdui-list-item>
     </mdui-list>
   </mdui-navigation-drawer>
@@ -53,6 +52,7 @@ function goTab(t) {
   if (t === 'about') router.push('/admin')
   else if (t === 'announcements') router.push('/admin/announcements')
   else if (t === 'sites') router.push('/admin/sites')
+  else if (t === 'links') router.push('/admin/links')
   else if (t === 'music') router.push('/admin/music-share')
 
   if (window.innerWidth < 900) drawerOpen.value = false;
@@ -99,6 +99,7 @@ function syncTabWithRoute() {
   if (path === '/admin' || path === '/admin/') tab.value = 'about'
   else if (path.includes('/admin/announcements')) tab.value = 'announcements'
   else if (path.includes('/admin/sites')) tab.value = 'sites'
+  else if (path.includes('/admin/links')) tab.value = 'links'
   else if (path.includes('/admin/music-share')) tab.value = 'music'
 }
 

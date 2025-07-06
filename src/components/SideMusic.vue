@@ -60,77 +60,35 @@
 import { globalVars } from '@/utils/globalVars';
 import { MusicPlayer } from '@/utils/musicPlayer';
 import { prompt, snackbar } from 'mdui';
-import { onBeforeMount, onMounted, ref, nextTick, inject } from 'vue';
+import { onBeforeMount, onMounted, ref, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
 
-onBeforeMount(async () => {
-    // 初始化音乐组件
-    try {
-        // 确保 localStorage 存在且有效
-        const navidrome = localStorage.getItem("navidrome");
-        const token = navidrome ? JSON.parse(navidrome)?.token : null;
-
-        if (!token) {
-            // 没有token,执行登录流程
-            await updateToken();
-        }
-
-        // 设置请求头
-        headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
-        headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
-
-        // 验证token是否有效
-        await keepAlive();
-
-        // 获取音乐列表
-        await getMusicList();
-
-        // 加载播放列表
-        player.loadPlaylist(music_list.value);
-
-        available.value = true;
-
-    } catch (e) {
-        console.warn("Music initialization error:", e);
-
-        // 尝试重新获取token
-        try {
-            await updateToken();
-            headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
-            headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
-
-            await keepAlive();
-            await getMusicList();
-            player.loadPlaylist(music_list.value);
-
-            available.value = true;
-        } catch (retryError) {
-            console.error("Music initialization failed after retry:", retryError);
-            available.value = false;
-            snackbar({
-                message: "无法连接到音乐服务器，请稍后重试",
-                autoCloseDelay: 3000
-            });
-        }
-    }
+onBeforeMount(() => {
+    // 异步初始化音乐组件，避免阻塞页面渲染
+    initializeMusicPlayer();
 });
 
-onMounted(() => {
+onMounted(async () => {
     drawer = document.getElementById("music-drawer")
     const audio = document.getElementById("audioElement")
     loading.value = false
 
     // 修改进度条提示函数
     const slider = document.getElementById("music-slider")
-    slider.labelFormatter = (value) => player.formatTime(value);
-
-    if (!available.value) {
-        return
+    if (slider) {
+        slider.labelFormatter = (value) => player.formatTime(value);
     }
-    player.init(audio)
+
+    // 始终初始化音频元素，即使服务器不可用
+    if (audio) {
+        player.init(audio);
+    }
+
+    // 等待音乐播放器初始化完成
+    await waitForMusicInitialization();
 })
 
 // 监听处理分享音乐事件
@@ -140,12 +98,10 @@ window.addEventListener('handle-shared-music', async (event) => {
     // 检查 token 和播放列表是否已加载
     if (!player.playlistLoaded) {
         try {
-            await updateToken();
-            headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
-            headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
-            await keepAlive();
-            await getMusicList();
-            player.loadPlaylist(music_list.value);
+            await initializeMusicPlayer();
+            if (!available.value) {
+                throw new Error('Music service unavailable');
+            }
         } catch (error) {
             console.error('初始化音乐播放器失败:', error);
             snackbar({
@@ -299,74 +255,163 @@ export const headers = {
 export const music_list = ref([])
 export const loading = ref(true)
 var firstflag = true
+let initializationPromise = null
+
+async function initializeMusicPlayer() {
+    if (initializationPromise) {
+        return initializationPromise;
+    }
+
+    initializationPromise = (async () => {
+        try {
+            // 确保 localStorage 存在且有效
+            const navidrome = localStorage.getItem("navidrome");
+            const token = navidrome ? JSON.parse(navidrome)?.token : null;
+
+            if (!token) {
+                // 没有token,执行登录流程
+                await updateToken();
+            }
+
+            // 设置请求头
+            headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
+            headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
+
+            // 验证token是否有效
+            await keepAlive();
+
+            // 获取音乐列表
+            await getMusicList();
+
+            // 加载播放列表
+            player.loadPlaylist(music_list.value);
+
+            available.value = true;
+            console.log("Music player initialized successfully");
+
+        } catch (e) {
+            console.warn("Music initialization error:", e);
+            available.value = false;
+            
+            // 显示用户友好的错误信息
+            setTimeout(() => {
+                snackbar({
+                    message: "音乐服务暂时不可用",
+                    autoCloseDelay: 3000
+                });
+            }, 1000);
+        }
+    })();
+
+    return initializationPromise;
+}
+
+async function waitForMusicInitialization() {
+    if (initializationPromise) {
+        await initializationPromise;
+    }
+}
 
 async function updateToken() {
-    const response = await fetch(`${globalVars.navidrome.server}/auth/login`, {
-        method: "POST",
-        body: JSON.stringify({
-            username: globalVars.navidrome.user,
-            password: globalVars.navidrome.password
-        })
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
 
-    if (!response.ok) {
-        throw new Error(response.status === 401 ?
-            "Navidrome用户名或密码错误" :
-            "连接Navidrome服务器失败"
-        );
+    try {
+        const response = await fetch(`${globalVars.navidrome.server}/auth/login`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: globalVars.navidrome.user,
+                password: globalVars.navidrome.password
+            }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error(response.status === 401 ?
+                "Navidrome用户名或密码错误" :
+                "连接Navidrome服务器失败"
+            );
+        }
+
+        const data = await response.json();
+        localStorage.setItem("navidrome", JSON.stringify(data));
+
+        if (data.isAdmin) {
+            console.warn("请避免使用管理员Navidrome账户");
+        }
+
+        return data;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error('连接超时，请检查网络或服务器状态');
+        }
+        throw error;
     }
-
-    const data = await response.json();
-    localStorage.setItem("navidrome", JSON.stringify(data));
-
-    if (data.isAdmin) {
-        console.warn("请避免使用管理员Navidrome账户");
-    }
-
-    return data;
 }
 
-function keepAlive() {
-    return new Promise(function (resolve, reject) {
-        // keepalive
-        fetch(`${globalVars.navidrome.server}/api/keepalive/keepalive`, {
+async function keepAlive() {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8秒超时
+
+    try {
+        const response = await fetch(`${globalVars.navidrome.server}/api/keepalive/keepalive`, {
             method: "GET",
-            headers: headers
-        }).then(response => response.json())
-            .then(data => {
-                console.log("Navidrome KeepAlive", data)
-                if (data.error !== undefined || !data.response === "ok") {
-                    updateToken().then(() => {
-                        globalVars.navidrome.login = JSON.parse(localStorage.getItem("navidrome"))
-                        resolve()
-                    })
-                }
-                else {
-                    // 加载登陆信息到全局变量
-                    globalVars.navidrome.login = JSON.parse(localStorage.getItem("navidrome"))
-                    resolve()
-                }
-            }).catch(() => { reject() })
-    })
+            headers: headers,
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+        const data = await response.json();
+        console.log("Navidrome KeepAlive", data);
+
+        if (data.error !== undefined || !data.response === "ok") {
+            await updateToken();
+            globalVars.navidrome.login = JSON.parse(localStorage.getItem("navidrome"));
+        } else {
+            // 加载登陆信息到全局变量
+            globalVars.navidrome.login = JSON.parse(localStorage.getItem("navidrome"));
+        }
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error('KeepAlive请求超时');
+        }
+        throw error;
+    }
 }
 
-function getMusicList() {
-    return new Promise(function (resolve, reject) {
-        // 获取音乐列表
-        fetch(`${globalVars.navidrome.server}${globalVars.navidrome.playListURL}`, {
+async function getMusicList() {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
+
+    try {
+        const response = await fetch(`${globalVars.navidrome.server}${globalVars.navidrome.playListURL}`, {
             method: "GET",
-            headers: headers
-        }).then(response => {
-            if (response.ok) {
-                response.json().then(data => {
-                    music_list.value = data
-                    resolve()
-                })
-            } else {
-                reject()
-            }
-        })
-    })
+            headers: headers,
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+            const data = await response.json();
+            music_list.value = data;
+        } else {
+            throw new Error(`获取音乐列表失败: ${response.status}`);
+        }
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error('获取音乐列表超时');
+        }
+        throw error;
+    }
 }
 
 export const opendrawer = () => {

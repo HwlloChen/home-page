@@ -29,6 +29,11 @@ class MusicPlayer {
     }
 
     init(audioElement) {
+        if (!audioElement) {
+            console.warn('Audio element not provided to MusicPlayer.init()');
+            return;
+        }
+        
         this.audio = audioElement;
         this.playlist = [];
         this.currentTrackIndex = 0;
@@ -84,6 +89,11 @@ class MusicPlayer {
 
     // 更新播放时间
     updateNowTime() {
+        if (!this.audio) {
+            console.warn('Audio element not initialized');
+            return;
+        }
+        
         const nowTime = this.audio.currentTime;
         this.playingMusic.value.nowTime = Math.floor(nowTime);
         this.playingMusic.value.nowTimeString = this.formatTime(nowTime);
@@ -101,10 +111,19 @@ class MusicPlayer {
     }
 
     changeNowTime(nowTime) {
+        if (!this.audio) {
+            console.warn('Audio element not initialized');
+            return;
+        }
         this.audio.currentTime = nowTime;
     }
 
     updateDuration() {
+        if (!this.audio) {
+            console.warn('Audio element not initialized');
+            return;
+        }
+        
         const duration = this.audio.duration;
         this.playingMusic.value.maxTime = Math.floor(duration);
         this.playingMusic.value.maxTimeString = this.formatTime(duration);
@@ -119,6 +138,11 @@ class MusicPlayer {
 
     // 加载指定索引的歌曲并获取流 URL
     async loadTrack(index) {
+        if (!this.audio) {
+            console.warn('Audio element not initialized, cannot load track');
+            return;
+        }
+        
         this.currentTrackIndex = index;
         this.track = this.playlist[index];
         const { server, user, login, clientName } = navidrome;
@@ -163,6 +187,10 @@ class MusicPlayer {
     }
 
     updateLyric() {
+        if (!this.audio) {
+            return;
+        }
+        
         // 获取当前播放时间，单位毫秒
         const now = Math.floor(this.audio.currentTime * 1000) + 110; // 加110毫秒以避免歌词过慢显示
         const lyrics = this.playingMusic.value.lyrics;
@@ -199,13 +227,25 @@ class MusicPlayer {
     }
 
     play() {
+        if (!this.audio) {
+            console.warn('Audio element not initialized');
+            return;
+        }
+        
         this.playingMusic.value.pause = false
         setTimeout(() => {
-            this.audio.play();
+            this.audio.play().catch(error => {
+                console.warn('Audio play failed:', error);
+            });
         }, 100);
     }
 
     pause() {
+        if (!this.audio) {
+            console.warn('Audio element not initialized');
+            return;
+        }
+        
         this.playingMusic.value.pause = true
         setTimeout(() => {
             this.audio.pause();

@@ -9,9 +9,6 @@ import Music from './components/SideMusic.vue';
 import Footer from './components/Footer.vue';
 import Live2d from './components/Live2d.vue';
 
-const musicShareRef = ref(null);
-const live2dRef = ref(null); // 新增
-
 onMounted(() => {
 	//绑定glass类到body
 	useGlass.value ? document.body.classList.add("glass") : document.body.classList.remove("glass")
@@ -26,13 +23,13 @@ onMounted(() => {
 	<mdui-layout>
 		<AppBar />
 		<mdui-layout-main>
-			<router-view ref="musicShareRef"></router-view>
+			<router-view></router-view>
 		</mdui-layout-main>
 		<Footer />
 	</mdui-layout>
 	<Theme />
 	<Music v-if="hasV6 && globalVars.navidrome.enable" />
-	<Live2d ref="live2dRef" v-if="globalVars.theme.live2d && globalVars.live2d.enable" @onClose="globalVars.live2d.enable = false" /> <!-- 添加 ref -->
+	<Live2d v-if="globalVars.theme.live2d && globalVars.live2d.enable" @onClose="globalVars.live2d.enable = false" /> <!-- 添加 ref -->
 </template>
 
 <style lang="less">

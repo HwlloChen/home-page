@@ -31,6 +31,10 @@ const router = createRouter({
             component: () => import('./views/MusicShare.vue')
         },
         {
+            path: "/links",
+            component: () => import('./views/Links.vue') // 友链页面
+        },
+        {
             path: '/admin',
             component: () => import('./views/Admin.vue'),
             children: [
@@ -49,6 +53,10 @@ const router = createRouter({
                 {
                     path: 'music-share',
                     component: () => import('./views/admin/MusicShareAdmin.vue')
+                },
+                {
+                    path: 'links',
+                    component: () => import('./views/admin/LinksAdmin.vue')
                 }
             ]
         }

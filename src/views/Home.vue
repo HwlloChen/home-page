@@ -4,6 +4,7 @@ import Services from '../components/Services.vue';
 import AboutMe from '../components/AboutMe.vue';
 import { globalVars } from '../utils/globalVars';
 import Comments from '../components/Comments.vue';
+import FriendLinks from '../components/FriendLinks.vue';
 import { Announcements } from '@/utils/Announcements';
 import { onMounted } from 'vue';
 import { setTitle } from '@/components/AppBar.vue';
@@ -39,6 +40,17 @@ onMounted(() => {
                     </div>
                 </div>
                 <AboutMe />
+            </section>
+
+            <section>
+                <div class="section-title" data-aos="fade-right">
+                    <mdui-icon name="link"></mdui-icon>
+                    <div class="section-title-text">
+                        <span class="chinese">友链</span>
+                        <span class="english ubuntu-light-italic">Friend Links</span>
+                    </div>
+                </div>
+                <FriendLinks />
             </section>
 
             <section v-if="globalVars.artalk.enable">
