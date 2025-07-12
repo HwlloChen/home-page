@@ -67,11 +67,20 @@ const router = useRouter();
 const route = useRoute();
 
 onBeforeMount(() => {
-    // 异步初始化音乐组件，避免阻塞页面渲染
-    initializeMusicPlayer();
+    // 使用 requestIdleCallback 或 setTimeout 在空闲时初始化
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+            initializeMusicPlayer();
+        }, { timeout: 2000 });
+    } else {
+        // 降级方案：使用 setTimeout 延迟执行
+        setTimeout(() => {
+            initializeMusicPlayer();
+        }, 100);
+    }
 });
 
-onMounted(async () => {
+onMounted(() => {
     drawer = document.getElementById("music-drawer")
     const audio = document.getElementById("audioElement")
     loading.value = false
@@ -87,8 +96,8 @@ onMounted(async () => {
         player.init(audio);
     }
 
-    // 等待音乐播放器初始化完成
-    await waitForMusicInitialization();
+    // 不要等待音乐播放器初始化，让它在后台完成
+    waitForMusicInitialization().catch(console.error);
 })
 
 // 监听处理分享音乐事件
@@ -96,16 +105,24 @@ window.addEventListener('handle-shared-music', async (event) => {
     const musicData = event.detail;
 
     // 检查 token 和播放列表是否已加载
-    if (!player.playlistLoaded) {
+    if (!player.playlistLoaded || !available.value) {
         try {
-            await initializeMusicPlayer();
+            // 如果音乐服务尚未初始化，等待初始化完成
+            await waitForMusicInitialization();
+            
+            // 如果等待后仍不可用，触发重新初始化
+            if (!available.value) {
+                initializationPromise = null;
+                await initializeMusicPlayer();
+            }
+            
             if (!available.value) {
                 throw new Error('Music service unavailable');
             }
         } catch (error) {
             console.error('初始化音乐播放器失败:', error);
             snackbar({
-                message: "无法连接到音乐服务器，请稍后重试",
+                message: "音乐服务正在连接中，请稍后重试",
                 autoCloseDelay: 3000
             });
             return;
@@ -126,6 +143,7 @@ window.addEventListener('handle-shared-music', async (event) => {
     if (musicIndex !== -1) {
         // 如果在列表中，添加标记并播放
         music_list.value[musicIndex].isShared = true;
+        player.setShareMode(true, musicIndex); // 设置分享模式
         player.loadTrack(musicIndex);
     } else {
         // 如果不在列表中，添加到播放列表并播放
@@ -139,7 +157,9 @@ window.addEventListener('handle-shared-music', async (event) => {
         };
         music_list.value.push(newMusic);
         player.loadPlaylist(music_list.value);
-        player.loadTrack(music_list.value.length - 1);
+        const newIndex = music_list.value.length - 1;
+        player.setShareMode(true, newIndex); // 设置分享模式
+        player.loadTrack(newIndex);
     }
 
     player.playbackMode.value = -1; // 设置为单曲循环
@@ -257,7 +277,7 @@ export const loading = ref(true)
 var firstflag = true
 let initializationPromise = null
 
-async function initializeMusicPlayer() {
+async function initializeMusicPlayer(retryCount = 0) {
     if (initializationPromise) {
         return initializationPromise;
     }
@@ -293,17 +313,53 @@ async function initializeMusicPlayer() {
             console.warn("Music initialization error:", e);
             available.value = false;
             
-            // 显示用户友好的错误信息
-            setTimeout(() => {
-                snackbar({
-                    message: "音乐服务暂时不可用",
-                    autoCloseDelay: 3000
-                });
-            }, 1000);
+            // 重试逻辑
+            if (retryCount < 3) {
+                console.log(`Retrying music initialization (${retryCount + 1}/3)...`);
+                initializationPromise = null;
+                
+                // 使用指数退避策略
+                const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
+                setTimeout(() => {
+                    initializeMusicPlayer(retryCount + 1);
+                }, delay);
+            } else {
+                // 最终失败后的处理
+                setTimeout(() => {
+                    snackbar({
+                        message: "音乐服务暂时不可用，将在后台继续尝试连接",
+                        autoCloseDelay: 3000
+                    });
+                }, 1000);
+                
+                // 后台静默重试
+                scheduleBackgroundRetry();
+            }
         }
     })();
 
     return initializationPromise;
+}
+
+// 后台重试机制
+function scheduleBackgroundRetry() {
+    setTimeout(async () => {
+        if (!available.value) {
+            try {
+                initializationPromise = null;
+                await initializeMusicPlayer();
+                if (available.value) {
+                    snackbar({
+                        message: "音乐服务已恢复连接",
+                        autoCloseDelay: 2000
+                    });
+                }
+            } catch (e) {
+                // 继续后台重试
+                scheduleBackgroundRetry();
+            }
+        }
+    }, 30000); // 30秒后重试
 }
 
 async function waitForMusicInitialization() {
@@ -367,12 +423,20 @@ async function keepAlive() {
         });
 
         clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`KeepAlive failed with status: ${response.status}`);
+        }
+        
         const data = await response.json();
         console.log("Navidrome KeepAlive", data);
 
-        if (data.error !== undefined || !data.response === "ok") {
+        if (data.error !== undefined || data.response !== "ok") {
             await updateToken();
             globalVars.navidrome.login = JSON.parse(localStorage.getItem("navidrome"));
+            // 更新请求头
+            headers['x-nd-authorization'] = `Bearer ${globalVars.navidrome.login.token}`;
+            headers['x-nd-client-unique-id'] = globalVars.navidrome.login.id;
         } else {
             // 加载登陆信息到全局变量
             globalVars.navidrome.login = JSON.parse(localStorage.getItem("navidrome"));

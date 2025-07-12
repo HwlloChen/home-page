@@ -24,7 +24,7 @@
       </div>
       <div v-else class="no-links">暂无友链</div>
       <div>
-        <mdui-button v-if="links.length > 0" variant="tonal" class="view-all-btn" @click="router.push('/links')">
+        <mdui-button v-if="links.length > 0" variant="tonal" class="view-all-btn" @click="goToLinksPage">
           查看全部友链
           <mdui-icon slot="end" name="arrow_forward"></mdui-icon>
         </mdui-button>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from 'vue'
+import { ref, onMounted, computed, onUnmounted, nextTick } from 'vue'
 import { globalVars } from '@/utils/globalVars'
 import { useRouter } from 'vue-router'
 
@@ -130,6 +130,15 @@ onUnmounted(() => {
     progressTimer = null
   }
 })
+
+// 跳转到友链页面并滚动到顶部
+function goToLinksPage() {
+  router.push('/links')
+  // 使用 nextTick 确保路由跳转完成后再滚动
+  nextTick(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
+}
 </script>
 
 <style lang="less" scoped>

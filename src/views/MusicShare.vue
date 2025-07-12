@@ -245,6 +245,8 @@ onMounted(() => {
             if (newPath.startsWith('/music/share/')) {
                 await initializeSharePage();
             } else {
+                // 离开分享页面时，重置分享模式
+                player.setShareMode(false, -1);
                 // 清空已有标记
                 music_list.value.forEach(music => {
                     music.isShared = false;

@@ -25,7 +25,8 @@ const navidrome = globalVars.navidrome
 
 class MusicPlayer {
     constructor() {
-        this.isSharePage = window.location.pathname.startsWith('/music/share/');
+        this.isSharePage = false;
+        this.sharedMusicIndex = -1; // 记录分享音乐在播放列表中的索引
     }
 
     init(audioElement) {
@@ -45,6 +46,12 @@ class MusicPlayer {
 
     playlistLoaded = false;
     firstLoad = true;
+
+    // 设置是否在分享页面以及分享音乐的索引
+    setShareMode(isSharePage, sharedMusicIndex = -1) {
+        this.isSharePage = isSharePage;
+        this.sharedMusicIndex = sharedMusicIndex;
+    }
 
     // 加载播放列表
     loadPlaylist(songs) {
@@ -208,7 +215,6 @@ class MusicPlayer {
             }
         }
         const currentLyricStart = lyrics[currentIndex].start;
-        const nextLyricStart = (lyrics[currentIndex + 1] ? lyrics[currentIndex + 1].start : Infinity);
 
         // 检查当前时间是否在当前歌词的时间范围内
         if (this.currentLyricTimeshift === currentLyricStart) {
@@ -261,14 +267,18 @@ class MusicPlayer {
     }
 
     nextTrack() {
-        if (this.isSharePage) {
-            // 在分享页面，单曲循环
-            this.loadTrack(0);
+        if (this.playbackMode.value === -1) {
+            // 单曲循环模式，不管是否在分享页面，都循环当前歌曲
+            this.loadTrack(this.currentTrackIndex);
         } else {
+            // 正常的播放模式切换
             switch (this.playbackMode.value) {
                 case 0:
                     if (this.currentTrackIndex < this.playlist.length - 1) {
                         this.loadTrack(this.currentTrackIndex + 1);
+                    } else if (this.isSharePage && this.sharedMusicIndex >= 0) {
+                        // 在分享页面且播放到列表末尾，回到分享的音乐
+                        this.loadTrack(this.sharedMusicIndex);
                     }
                     break;
                 case 1:
@@ -276,9 +286,6 @@ class MusicPlayer {
                     this.lastTracks.push(this.currentTrackIndex);
                     const randomTrack = Math.floor(Math.random() * (this.playlist.length));
                     this.loadTrack(randomTrack);
-                    break;
-                case -1:
-                    this.loadTrack(this.currentTrackIndex);
                     break;
                 default:
                     if (this.currentTrackIndex < this.playlist.length - 1) {
@@ -291,14 +298,18 @@ class MusicPlayer {
     }
 
     prevTrack() {
-        if (this.isSharePage) {
-            // 在分享页面，单曲循环
-            this.loadTrack(0);
+        if (this.playbackMode.value === -1) {
+            // 单曲循环模式，不管是否在分享页面，都循环当前歌曲
+            this.loadTrack(this.currentTrackIndex);
         } else {
+            // 正常的播放模式切换
             switch (this.playbackMode.value) {
                 case 0:
                     if (this.currentTrackIndex > 0) {
                         this.loadTrack(this.currentTrackIndex - 1);
+                    } else if (this.isSharePage && this.sharedMusicIndex >= 0) {
+                        // 在分享页面且播放到列表开头，回到分享的音乐
+                        this.loadTrack(this.sharedMusicIndex);
                     }
                     break;
                 case 1:
@@ -309,9 +320,6 @@ class MusicPlayer {
                     } else {
                         this.loadTrack(lastTrack);
                     }
-                    break;
-                case -1:
-                    this.loadTrack(this.currentTrackIndex);
                     break;
                 default:
                     if (this.currentTrackIndex > 0) {
@@ -342,8 +350,7 @@ class MusicPlayer {
     lastTracks = [];
 
     changePlayBackMode() {
-        if (this.isSharePage) return; // 在分享页面禁用播放模式切换
-
+        // 移除分享页面的限制，允许用户自由切换播放模式
         if (this.playbackMode.value === 1) {
             this.playbackMode.value = -1;
             this.lastTracks = [];
@@ -351,13 +358,18 @@ class MusicPlayer {
             this.playbackMode.value += 1;
         }
 
-        const storage = JSON.parse(localStorage.getItem("lastmusic"));
-        localStorage.setItem("lastmusic", JSON.stringify({
-            id: storage.id,
-            time: storage.time,
-            playbackMode: this.playbackMode.value,
-            lastTracks: this.lastTracks,
-        }));
+        // 只有在非分享页面才保存播放模式到 localStorage
+        if (!this.isSharePage) {
+            const storage = JSON.parse(localStorage.getItem("lastmusic"));
+            if (storage) {
+                localStorage.setItem("lastmusic", JSON.stringify({
+                    id: storage.id,
+                    time: storage.time,
+                    playbackMode: this.playbackMode.value,
+                    lastTracks: this.lastTracks,
+                }));
+            }
+        }
     }
 
     playingMusic = ref({
