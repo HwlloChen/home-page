@@ -9,16 +9,19 @@
           <mdui-linear-progress :value="progress" max="100"></mdui-linear-progress>
         </div>
         <mdui-list>
+          <!-- 用transition-group包裹外层div，动画只作用于div -->
           <transition-group name="link-fade" tag="div" class="transition-container">
-            <mdui-list-item v-for="link in displayLinks" :key="link.id" class="link-item" :href="link.url"
-              target="_blank" rel="noopener">
-              <mdui-avatar v-if="link.avatar" :src="link.avatar" slot="icon" :alt="link.name"></mdui-avatar>
-              {{ link.name }}
-              <span v-if="link.desc" slot="description"
-                style="font-size: .85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal;">
-                {{ link.desc }}
-              </span>
-            </mdui-list-item>
+            <div v-for="link in displayLinks" :key="link.id">
+              <mdui-list-item class="link-item" :href="link.url"
+                target="_blank" rel="noopener">
+                <mdui-avatar v-if="link.avatar" :src="link.avatar" slot="icon" :alt="link.name"></mdui-avatar>
+                {{ link.name }}
+                <span v-if="link.desc" slot="description"
+                  style="font-size: .85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; line-clamp: 2;">
+                  {{ link.desc }}
+                </span>
+              </mdui-list-item>
+            </div>
           </transition-group>
         </mdui-list>
       </div>
@@ -38,10 +41,13 @@ import { ref, onMounted, computed, onUnmounted, nextTick } from 'vue'
 import { globalVars } from '@/utils/globalVars'
 import { useRouter } from 'vue-router'
 
+const displayCount = 3 // 每次显示的友链数量
+const ROTATION_INTERVAL = 6 * 1000 // 6秒
+const PROGRESS_INTERVAL = 80 // 80ms更新一次进度
+
 const links = ref([])
 const loading = ref(true)
 const currentIndex = ref(0)
-const displayCount = 3 // 每次显示的友链数量
 const router = useRouter()
 const progress = ref(100) // 初始为100，倒计时到0
 const animating = ref(false)
@@ -101,8 +107,6 @@ function rotateLinks() {
 // 定时器
 let rotateTimer = null
 let progressTimer = null
-const ROTATION_INTERVAL = 8000 // 8秒
-const PROGRESS_INTERVAL = 100 // 100ms更新一次进度
 
 onMounted(() => {
   fetchLinks()
@@ -196,27 +200,23 @@ function goToLinksPage() {
     }
   }
 
-  // 动画效果
+  // 恢复动画相关样式
   .link-fade-enter-active {
     transition: all 0.4s ease;
   }
-
   .link-fade-leave-active {
     transition: all 0.4s ease;
     position: absolute;
     width: 100%;
   }
-
   .link-fade-enter-from {
     opacity: 0;
     transform: translateX(20px);
   }
-
   .link-fade-leave-to {
     opacity: 0;
     transform: translateX(-20px);
   }
-
   .link-fade-move {
     transition: transform 0.4s ease;
   }

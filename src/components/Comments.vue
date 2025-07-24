@@ -36,7 +36,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <mdui-card :variant="globalVars.theme.bgImage ? 'elevated' : 'outlined'" data-aos="zoom-in" id="comments-card">
+    <mdui-card :variant="globalVars.theme.bgImage ? 'elevated' : 'outlined'" data-aos="zoom-in" id="comments-card"
+        data-aos-offset="-4">
 
     </mdui-card>
 </template>

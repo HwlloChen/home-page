@@ -54,7 +54,7 @@ onMounted(() => {
             </section>
 
             <section v-if="globalVars.artalk.enable">
-                <div class="section-title" data-aos="fade-right">
+                <div class="section-title" data-aos="fade-right" data-aos-offset="-2">
                     <mdui-icon name="comment"></mdui-icon>
                     <div class="section-title-text">
                         <span class="chinese">留言板</span>
