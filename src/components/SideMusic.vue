@@ -61,10 +61,9 @@ import { globalVars } from '@/utils/globalVars';
 import { MusicPlayer } from '@/utils/musicPlayer';
 import { prompt, snackbar } from 'mdui';
 import { onBeforeMount, onMounted, ref, nextTick } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const route = useRoute();
 
 onBeforeMount(() => {
     // 使用 requestIdleCallback 或 setTimeout 在空闲时初始化
@@ -84,6 +83,11 @@ onMounted(() => {
     drawer = document.getElementById("music-drawer")
     const audio = document.getElementById("audioElement")
     loading.value = false
+    
+    // 确保drawer元素存在
+    if (!drawer) {
+        console.warn('音乐抽屉元素未找到');
+    }
 
     // 修改进度条提示函数
     const slider = document.getElementById("music-slider")
@@ -208,46 +212,63 @@ async function shareMusic() {
                         comment: comment,
                     };
 
-                    const response = await fetch(`${globalVars.site.backpoint}/music/share`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(shareData)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('分享失败');
-                    }
-
-                    const result = await response.json();
-                    const shareUrl = `/music/share/${result.id}`;
-
-                    // 复制分享链接到剪贴板
-                    const fullUrl = window.location.origin + shareUrl;
-                    await navigator.clipboard.writeText(fullUrl);
-                    // 使用 router 进行导航并等待导航完成
-                    await router.push(shareUrl);
-                    await nextTick();
-
-                    // 获取当前路由组件实例
-                    const currentInstance = router.currentRoute.value.matched[0].instances.default;
-                    if (currentInstance?.initializeSharePage) {
-                        await currentInstance.initializeSharePage();
-                    }
-
-                    // 显示提示消息
-                    setTimeout(() => {
-                        snackbar({
-                            message: "分享链接已复制到剪贴板",
-                            autoCloseDelay: 3000
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
+                    
+                    try {
+                        const response = await fetch(`${globalVars.site.backpoint}/music/share`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(shareData),
+                            signal: controller.signal
                         });
 
+                        clearTimeout(timeoutId);
+
+                        if (!response.ok) {
+                            throw new Error('分享失败');
+                        }
+
+                        const result = await response.json();
+                        const shareUrl = `/music/share/${result.id}`;
+
+                        // 复制分享链接到剪贴板
+                        const fullUrl = window.location.origin + shareUrl;
+                        await navigator.clipboard.writeText(fullUrl);
+                        // 使用 router 进行导航并等待导航完成
+                        await router.push(shareUrl);
+                        await nextTick();
+
+                        // 获取当前路由组件实例
+                        const currentInstance = router.currentRoute.value.matched[0].instances.default;
+                        if (currentInstance?.initializeSharePage) {
+                            await currentInstance.initializeSharePage();
+                        }
+
+                        // 显示提示消息
                         setTimeout(() => {
-                            // 关闭音乐抽屉
-                            drawer.open = false
-                        }, 300);
-                    }, 200);
+                            snackbar({
+                                message: "分享链接已复制到剪贴板",
+                                autoCloseDelay: 3000
+                            });
+
+                            setTimeout(() => {
+                                // 关闭音乐抽屉
+                                const musicDrawer = document.getElementById("music-drawer");
+                                if (musicDrawer) {
+                                    musicDrawer.open = false;
+                                }
+                            }, 300);
+                        }, 200);
+                    } catch (fetchError) {
+                        clearTimeout(timeoutId);
+                        if (fetchError.name === 'AbortError') {
+                            throw new Error('分享请求超时');
+                        }
+                        throw fetchError;
+                    }
                 } finally {
                     shareButton.loading = false;
                 }
@@ -425,7 +446,17 @@ async function keepAlive() {
         clearTimeout(timeoutId);
         
         if (!response.ok) {
-            throw new Error(`KeepAlive failed with status: ${response.status}`);
+            if (response.status === 401) {
+                // Token过期，刷新token
+                await updateToken();
+                globalVars.navidrome.login = JSON.parse(localStorage.getItem("navidrome"));
+                // 更新请求头
+                headers['x-nd-authorization'] = `Bearer ${globalVars.navidrome.login.token}`;
+                headers['x-nd-client-unique-id'] = globalVars.navidrome.login.id;
+                return;
+            } else {
+                throw new Error(`KeepAlive failed with status: ${response.status}`);
+            }
         }
         
         const data = await response.json();
@@ -463,11 +494,31 @@ async function getMusicList() {
 
         clearTimeout(timeoutId);
 
-        if (response.ok) {
+        if (!response.ok) {
+            if (response.status === 401) {
+                // Token过期，刷新token后重试
+                await updateToken();
+                headers['x-nd-authorization'] = `Bearer ${JSON.parse(localStorage.getItem("navidrome")).token}`;
+                headers['x-nd-client-unique-id'] = JSON.parse(localStorage.getItem("navidrome")).id;
+                
+                // 重新请求
+                const retryResponse = await fetch(`${globalVars.navidrome.server}${globalVars.navidrome.playListURL}`, {
+                    method: "GET",
+                    headers: headers
+                });
+                
+                if (!retryResponse.ok) {
+                    throw new Error(`获取音乐列表失败: ${retryResponse.status}`);
+                }
+                
+                const data = await retryResponse.json();
+                music_list.value = data;
+            } else {
+                throw new Error(`获取音乐列表失败: ${response.status}`);
+            }
+        } else {
             const data = await response.json();
             music_list.value = data;
-        } else {
-            throw new Error(`获取音乐列表失败: ${response.status}`);
         }
     } catch (error) {
         clearTimeout(timeoutId);
@@ -479,12 +530,23 @@ async function getMusicList() {
 }
 
 export const opendrawer = () => {
+    // 确保drawer元素存在
+    if (!drawer) {
+        drawer = document.getElementById("music-drawer");
+        if (!drawer) {
+            console.warn('音乐抽屉元素未找到，无法打开');
+            return;
+        }
+    }
+    
     drawer.open = !drawer.open
     if (firstflag && player.playlistLoaded) {
         setTimeout(() => {
             // 平滑滚动到指定元素
-            const targets = document.querySelector(".music-list").children;
-            targets[player.playingMusic.value.index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const targets = document.querySelector(".music-list");
+            if (targets && targets.children && targets.children[player.playingMusic.value.index]) {
+                targets.children[player.playingMusic.value.index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }, 200);
         firstflag = false
     }
