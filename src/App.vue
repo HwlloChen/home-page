@@ -7,7 +7,6 @@ import { globalVars } from './utils/globalVars';
 import { hasV6 } from './components/IPv6Checker.vue';
 import Music from './components/SideMusic.vue';
 import Footer from './components/Footer.vue';
-import Live2d from './components/Live2d.vue';
 
 onMounted(() => {
 	//绑定glass类到body
@@ -29,7 +28,6 @@ onMounted(() => {
 	</mdui-layout>
 	<Theme />
 	<Music v-if="hasV6 && globalVars.navidrome.enable" />
-	<Live2d v-if="globalVars.theme.live2d && globalVars.live2d.enable" @onClose="globalVars.live2d.enable = false" /> <!-- 添加 ref -->
 </template>
 
 <style lang="less">

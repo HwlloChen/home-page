@@ -18,7 +18,6 @@ import { reactive } from "vue";
  * @property {string} theme.color - Theme color in hex / 主题颜色（十六进制）
  * @property {string} theme.bgImage - Background image URL / 背景图片地址
  * @property {boolean} theme.useGlass - Enable/disable glass effect based on screen width / 基于屏幕宽度启用/禁用毛玻璃效果
- * @property {boolean} theme.live2d - Enable/disable Live2D / 启用/禁用 Live2D
  * @property {Object} author - Author information / 作者信息
  * @property {string} author.name - Author's name / 作者昵称
  * @property {string} author.description - Author's description with jumping text (format: %text1|text2|text3%) / 作者描述（支持跳动文字，格式：%文字1|文字2|文字3%）
@@ -36,16 +35,7 @@ import { reactive } from "vue";
  * @property {string} artalk.server - Artalk server URL / Artalk服务器地址
  * @property {string} artalk.site - Artalk site name / Artalk站点名称
  * @property {string} artalk.pageTitle - Artalk page title / Artalk页面标题
- * @property {Object} live2d - Live2D widget configuration / Live2D小部件配置
- * @property {boolean} live2d.enable - Enable/disable Live2D widget / 启用/禁用Live2D小部件
- * @property {string} live2d.model - Live2D model URL / Live2D模型地址
- * @property {number} live2d.width - Live2D widget width / Live2D小部件宽度
- * @property {number} live2d.height - Live2D widget height / Live2D小部件高度
- * @property {number} live2d.left - Live2D widget left offset / Live2D小部件水平偏移
- * @property {number} live2d.bottom - Live2D widget bottom offset / Live2D小部件垂直偏移
- * @property {Object} live2d.position - Live2D widget position / Live2D小部件位置
- * @property {string} live2d.position.x - Horizontal position ('left' or 'right') / 水平位置（'left'或'right'）
- * @property {string} live2d.position.y - Vertical position ('top' or 'bottom') / 垂直位置（'top'或'bottom'）
+ * @property {boolean} theme.akpets - Enable/disable akpets / 启用/禁用 ArkPets-Web (Theme site)
  */
 
 const globalVars = reactive({
@@ -71,7 +61,7 @@ const globalVars = reactive({
         color: "#e97f6d",
         bgImage: "https://etaris.moe/files/img/mc/MoAoXnX.png",
         useGlass: window.screen.width >= 1080 ? true : false, // 根据屏幕宽度决定
-        live2d: false, // 是否启用Live2D
+        akpets: false, // 是否启用 ArkPets-Web
     },
     author: {
         name: "Chen",
@@ -93,17 +83,8 @@ const globalVars = reactive({
         site: "ChenServer主站",
         pageTitle: "ChenServer",
     },
-    live2d: {
-        enable: true, // 是否启用Live2D(后续以theme.live2d为准)
-        model: '/live2d-assets/amiya/阿米娅(1).model3.json', // Live2D模型地址
-        width: 400, // 宽度
-        height: 500, // 高度
-        left: -80, // 水平位置偏移
-        bottom: 0, // 垂直位置偏移
-        position: { // 模型位置
-            x: "left", // 水平位置（left/right）
-            y: "bottom" // 垂直位置（top/bottom）
-        },
+    akpets: {
+        enable: true, // 是否启用ArkPets(后续以theme.akpets为准)
     }
 })
 
